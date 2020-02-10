@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - "pika_postgres_data:/var/lib/postgresql/data"
+  django:
+    build: .
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./src:/code
+    ports:
+      - "8000:8000"
+    restart: on-failure
+    depends_on:
+      - db
+
+volumes:
+  pika_postgres_data:
