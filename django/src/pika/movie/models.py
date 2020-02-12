@@ -3,7 +3,7 @@ from django.utils.translation import ugettext as _
 
 from pika.db import models as pika_models
 from pika.base.models import Genre, Company, Keyword, Job, Review
-from pika.person.models import Person
+from pika.person.models import Person, Participation
 
 
 class Collection(pika_models.Model):
@@ -136,15 +136,9 @@ class MovieVideo(pika_models.TMDBVideo):
         verbose_name_plural = _('Movie videos')
 
 
-class Participation(pika_models.Model):
-    person = models.ForeignKey(to=Person, on_delete=models.CASCADE, related_name='participations',
-                               verbose_name=_('Person'))
+class MovieParticipation(Participation):
     movie = models.ForeignKey(to=Movie, on_delete=models.CASCADE, related_name='people',
                               verbose_name=_('Movie'))
-    job = models.ForeignKey(to=Job, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_('Job'))
-
-    character = models.CharField(_('Character'), max_length=64, blank=True, null=True)
-    rus_character = models.CharField(_('Character in russian'), max_length=64, blank=True, null=True)
 
     class Meta:
         db_table = 'movie_participation'

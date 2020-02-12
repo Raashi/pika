@@ -3,7 +3,7 @@ from django.utils.translation import ugettext as _
 
 
 __all__ = ['TMDBId', 'IMDBId', 'ISOField', 'LogoImageField', 'BackdropImageField', 'PosterImageField',
-           'ProfileImageField', 'StillImageField']
+           'ProfileImageField', 'StillImageField', 'GenderField']
 
 
 class TMDBId(models.IntegerField):
@@ -62,3 +62,19 @@ class ProfileImageField(TMDBImageField):
 
 class StillImageField(TMDBImageField):
     default_field_eng_name = 'Still'
+
+
+GENDER_CHOICES = [
+    (0, 'unknown'),
+    (1, 'Female'),
+    (2, 'Male'),
+]
+
+
+class GenderField(models.IntegerField):
+    def __init__(self, verbose_name='', **kwargs):
+        verbose_name = verbose_name if verbose_name != '' else _('Gender')
+        kwargs['choices'] = GENDER_CHOICES
+        kwargs['blank'] = True
+        kwargs['null'] = True
+        super().__init__(verbose_name=verbose_name, **kwargs)

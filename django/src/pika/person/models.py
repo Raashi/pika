@@ -2,13 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext as _
 
 from pika.db import models as pika_models
-from pika.base.models import DEPARTMENT_CHOICES, DEPARTMENT_MAX_LENGTH
-
-GENDER_CHOICES = [
-    (0, 'unknown'),
-    (1, 'Female'),
-    (2, 'Male'),
-]
+from pika.base.models import DEPARTMENT_CHOICES, DEPARTMENT_MAX_LENGTH, Job
 
 
 class Person(pika_models.Model):
@@ -16,7 +10,7 @@ class Person(pika_models.Model):
     imdb_id = pika_models.IMDBId()
     name = models.CharField(_('Person name'), max_length=64)
     rus_name = models.CharField(_('Person name in russian'), max_length=64, blank=True, null=True)
-    gender = models.IntegerField(_('Gender'), choices=GENDER_CHOICES)
+    gender = pika_models.GenderField()
 
     birthday = models.DateField(_('Birthday'), blank=True, null=True)
     deathday = models.DateField(_('Death day'), blank=True, null=True)
@@ -49,3 +43,16 @@ class PersonTMDBImage(pika_models.TMDBImage):
         db_table = 'person_image'
         verbose_name = _('Person image')
         verbose_name_plural = _('Person images')
+
+
+class Participation(pika_models.Model):
+    person = models.ForeignKey(to=Person, on_delete=models.CASCADE, related_name='participations',
+                               verbose_name=_('Person'))
+    job = models.ForeignKey(to=Job, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_('Job'))
+
+    character = models.CharField(_('Character'), max_length=64, blank=True, null=True)
+    rus_character = models.CharField(_('Character in russian'), max_length=64, blank=True, null=True)
+    gender = pika_models.GenderField()
+
+    class Meta:
+        abstract = True
