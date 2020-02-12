@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'pika.user',
+    'pika.db',
+    'pika.base',
+    'pika.person',
+    'pika.movie',
 ]
 
 MIDDLEWARE = [
@@ -106,7 +110,7 @@ AUTH_USER_MODEL = 'user.User'
 
 AUTH_HEADER_PREFIX = 'Bearer'
 
-AUTHENTICATION_BACKENDS = ['pika.auth.AdminAuthBackend']
+AUTHENTICATION_BACKENDS = ['pika.auth.DjangoAdminAuthBackend']
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
