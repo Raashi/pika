@@ -4,8 +4,8 @@ from api.scrapper.serializers import BaseUploadSerializer, TMDB_image_fields, TM
 from api.scrapper.base.serializers import GenreUploadSerializer, CompanyUploadSerializer, KeywordUploadSerializer
 from api.scrapper.person.serializers import PersonUploadSerializer
 
-from pika.movie.models import Movie, Collection, MovieReleaseDate, MoviePoster, MovieBackdrop, MovieVideo, MovieReview, \
-    MovieParticipation
+from pika.movie.models import Movie, Collection, MovieReleaseDate, MoviePoster, MovieBackdrop, MovieVideo, \
+    MovieReview, MovieParticipation
 
 
 class CollectionUploadSerializer(BaseUploadSerializer):
