@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
 
+    'pika.token',
     'pika.user',
     'pika.db',
     'pika.base',
@@ -88,21 +89,21 @@ DATABASES = {
     }
 }
 
-# auth settings
+# token settings
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.token.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.token.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.token.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.token.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -110,7 +111,7 @@ AUTH_USER_MODEL = 'user.User'
 
 AUTH_HEADER_PREFIX = 'Bearer'
 
-AUTHENTICATION_BACKENDS = ['pika.auth.DjangoAdminAuthBackend']
+AUTHENTICATION_BACKENDS = ['pika.token.DjangoAdminAuthBackend']
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
