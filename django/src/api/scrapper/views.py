@@ -3,11 +3,12 @@ from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.fields import Field
-
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import BaseAuthentication, get_authorization_header
 
-from pika.token.models import ScrapperAccessToken
+from pika.tokens.models import ScrapperAccessToken
+from .serializers import LoginSerializer, BaseListSerializer
 
 UserModel = get_user_model()
 
@@ -15,7 +16,7 @@ UserModel = get_user_model()
 class ScrapperAuthentication(BaseAuthentication):
     # TODO: move to django.settings
     authorization_prefix = 'Bearer'
-    error_message = 'Authentication failed. No token provided or token contains restricted characters'
+    error_message = 'Authentication failed. No tokens provided or tokens contains restricted characters'
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
@@ -48,7 +49,7 @@ class ScrapperAuthentication(BaseAuthentication):
 
 
 class BaseScrapperUploadView(GenericAPIView):
-    parser_classes = ['rest_framework.parsers.JSONParser']
+    parser_classes = [JSONParser]
     authentication_classes = [ScrapperAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -57,8 +58,24 @@ class BaseScrapperUploadView(GenericAPIView):
         if 'items' not in data:
             raise ValidationError({'items': Field.default_error_messages['required']})
 
-        serializer = self.get_serializer_class()(data=request.data['items'], many=True)
+        # serializer = self.get_serializer_class()(data=request.data['items'], many=True)
+        serializer = BaseListSerializer(data=request.data['items'], child=self.get_serializer_class()())
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         return Response(status=204)
+
+
+class LoginView(GenericAPIView):
+    parser_classes = [JSONParser]
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(True)
+
+        user = serializer.validated_data['user']
+
+        token, _ = ScrapperAccessToken.get_or_create(user.id)
+
+        return Response(data={'Bearer': token}, status=200)

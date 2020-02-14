@@ -71,9 +71,9 @@ class ScrapperAccessToken(CacheModel):
 
         if created or update_ttl:
             token_key = cls.get_cache_key(token)
-            # token -> account_id
+            # tokens -> account_id
             cls._set(token_key, scrapper_account_id)
-            # account_id -> token
+            # account_id -> tokens
             cls._set(account_key, token)
 
         return token, created
