@@ -1,6 +1,4 @@
-from rest_framework.serializers import ListSerializer
-
-from api.scrapper.serializers import BaseUploadSerializer, TMDB_image_fields
+from api.scrapper.serializers import BaseUploadSerializer, TMDB_image_fields, BaseListSerializer
 from pika.person.models import PersonTMDBImage, Person
 
 
@@ -13,7 +11,7 @@ class PersonImageUploadSerializer(BaseUploadSerializer):
 
 
 class PersonUploadSerializer(BaseUploadSerializer):
-    images = ListSerializer(child=PersonImageUploadSerializer, required=True)
+    images = BaseListSerializer(child=PersonImageUploadSerializer(), required=True)
 
     class Meta:
         model = Person
@@ -25,8 +23,8 @@ class PersonUploadSerializer(BaseUploadSerializer):
 
         person = super().save(**kwargs)
 
-        for image_serializer in images:
-            image_serializer.validated_data['person'] = person
-            image_serializer.save()
+        for image in images:
+            image['person'] = person
+        self.fields['images'].hard_save(images)
 
         return person

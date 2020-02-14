@@ -14,6 +14,7 @@ class Language(Model):
     ISO_639_1_LENGTH = 2
 
     id = ISOField(_('ISO code'), max_length=ISO_639_1_LENGTH)
+    # TODO: think of making name unique
     name = models.CharField(_('Language name'), max_length=32)
     rus_name = models.CharField(_('Language name in russian'), max_length=64, blank=True, null=True)
 
@@ -37,13 +38,13 @@ class Country(Model):
 
 
 class TMDBImage(Model):
-    path = models.CharField(_('Path'), max_length=64)
+    path = models.CharField(_('Path'), max_length=32, unique=True, db_index=True)
 
     aspect_ratio = models.DecimalField(_('Aspect ratio'), max_digits=5, decimal_places=2)
     width = models.IntegerField(_('Width'))
     height = models.IntegerField(_('Height'))
 
-    vote_average = models.IntegerField(_('Vote average'))
+    vote_average = models.DecimalField(_('Vote average'), max_digits=4, decimal_places=2)
     vote_count = models.IntegerField(_('Vote count'))
 
     class Meta:
