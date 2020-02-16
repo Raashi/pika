@@ -9,7 +9,7 @@ from rest_framework.serializers import ModelSerializer, ListSerializer, HiddenFi
 from rest_framework.fields import empty
 from rest_framework.validators import UniqueValidator
 
-from .validators import MultipleUniqueValidator, NotBlankUniqueValidator
+from .validators import MultipleUniqueValidator, NotBlankUniqueValidator, VeryMultipleUniqueValidator
 
 UserModel = get_user_model()
 
@@ -26,7 +26,8 @@ class BaseUploadSerializer(ModelSerializer):
 
     class Meta:
         model: Type[models.Model] = None
-        lookup_fields: str or list = None
+        lookup_fields: list = None
+        child_fields: list = []
 
     def __init__(self, instance=None, data=empty, **kwargs):
         super().__init__(instance=instance, data=data, **kwargs)
@@ -35,13 +36,9 @@ class BaseUploadSerializer(ModelSerializer):
         self._init_unique_validators()
 
     def _init_lookup_fields(self):
-        lookup_fields = getattr(self.Meta, 'lookup_fields', None)
-        if lookup_fields is None:
-            lookup_fields = self.Meta.model._meta.pk.name
-
-        if isinstance(lookup_fields, str):
-            lookup_fields = [lookup_fields]
-
+        lookup_fields = getattr(self.Meta, 'lookup_fields', [])
+        if not lookup_fields:
+            lookup_fields = [self.Meta.model._meta.pk.name]
         return lookup_fields
 
     def _init_unique_validators(self):
@@ -84,7 +81,9 @@ class BaseListSerializer(ListSerializer):
 
         self.instances = []
         self.validators.append(MultipleUniqueValidator())
+        self.validators.append(VeryMultipleUniqueValidator())
         self.lookup_fields = self.child.lookup_fields
+        self.save_count = 0
 
     def to_internal_value(self, data):
         # copied from rest framework sources
@@ -105,10 +104,10 @@ class BaseListSerializer(ListSerializer):
                 validated = self.child.run_validation(item)
                 instance = self.child.try_get_instance(item)
 
-                if instance is None:
-                    for field, field_obj in self.child.fields.items():
-                        if hasattr(field_obj, 'unique_validator'):
-                            field_obj.unique_validator(validated[field], field_obj)
+                for field, field_obj in self.child.fields.items():
+                    if hasattr(field_obj, 'unique_validator'):
+                        self.child.instance = instance
+                        field_obj.unique_validator(validated[field], field_obj)
 
                 self.instances.append(instance)
             except ValidationError as exc:
@@ -137,8 +136,9 @@ class BaseListSerializer(ListSerializer):
         else:
             validated_data = self.validated_data
 
-        for item, instance in zip(validated_data, self.instances):
+        for item, instance in zip(validated_data, self.instances[self.save_count:]):
             children.append(self.save_child(instance, item))
+        self.save_count += len(children)
 
         return children
 

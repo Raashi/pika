@@ -7,11 +7,6 @@ class MultipleUniqueValidator:
     message = 'Multiple equal values provided for unique field {}'
     requires_context = True
 
-    def __init__(self, queryset=None, message=None, lookup='exact'):
-        self.queryset = queryset
-        self.message = message or self.message
-        self.lookup = lookup
-
     def __call__(self, arr, serializer):
         checks = {}
 
@@ -26,6 +21,37 @@ class MultipleUniqueValidator:
                 if attrs[field_name] in field_checks:
                     raise ValidationError(self.message.format(field_name))
                 field_checks.add(attrs[field_name])
+
+
+class VeryMultipleUniqueValidator:
+    message = 'Multiple equal values provided for unique field {} in different parent objects {}'
+    ignore_values = [None, '']
+    requires_context = True
+
+    def __call__(self, arr, serializer):
+        checks = {}
+
+        child_fields = getattr(serializer.child.Meta, 'child_fields', [])
+        if not child_fields:
+            return
+
+        for field in serializer.child.Meta.child_fields:
+            for child_field, child_field_obj in serializer.child.fields[field].child.fields.items():
+                if hasattr(child_field_obj, 'unique_validator'):
+                    if field not in checks:
+                        checks[field] = {}
+                    checks[field][child_field] = set()
+
+        for item in arr:
+            for field in serializer.child.Meta.child_fields:
+                for sub_item in item[field]:
+                    for sub_field in checks[field]:
+                        value = sub_item.get(sub_field, None)
+                        if value in self.ignore_values:
+                            continue
+                        if value in checks[field][sub_field]:
+                            raise ValidationError(self.message.format(sub_field, field))
+                        checks[field][sub_field].add(value)
 
 
 class NotBlankUniqueValidator(UniqueValidator):

@@ -46,8 +46,8 @@ class PersonUploadTestCase(ScrapperBaseTestCase):
 
     def test_upload(self):
         # test required fields
-        response = self.post(self.url, {'items': [{'images': []}]}, expected_status=400).json()
-        self.assertEqual(set(response[0]), {'id', 'adult', 'popularity', 'name'})
+        response = self.post(self.url, {'items': [{}]}, expected_status=400).json()
+        self.assertEqual(set(response[0]), {'id', 'adult', 'popularity', 'name', 'images'})
 
         self.post(self.url, self.example, expected_status=204)
 
