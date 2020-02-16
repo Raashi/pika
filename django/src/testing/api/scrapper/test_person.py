@@ -46,8 +46,8 @@ class PersonUploadTestCase(ScrapperBaseTestCase):
 
     def test_upload(self):
         # test required fields
-        response = self.post(self.url, {'items': [{}]}, expected_status=400).json()
-        self.assertEqual(set(response[0]), {'id', 'adult', 'images', 'popularity', 'name'})
+        response = self.post(self.url, {'items': [{'images': []}]}, expected_status=400).json()
+        self.assertEqual(set(response[0]), {'id', 'adult', 'popularity', 'name'})
 
         self.post(self.url, self.example, expected_status=204)
 
@@ -65,19 +65,26 @@ class PersonUploadTestCase(ScrapperBaseTestCase):
         # still error - imdb_id are equal
         self.post(self.url, self.example, expected_status=400)
 
-        # change imdb_id of second_person (Nones are ok)
+        # change imdb_id of second_person (Nones are ok), but persons still have non-unique images
         self.example['items'][1]['imdb_id'] = None
+        self.post(self.url, self.example, expected_status=400)
+
+        # now images are different
+        self.example['items'][1]['images'][0]['path'] = 'another path'
         self.post(self.url, self.example, expected_status=204)
 
         # for sure add another None value
         self.example['items'].append(deepcopy(self.example['items'][1]))
         self.example['items'][2]['id'] = 3
+        self.example['items'][2]['images'][0]['path'] = 'one more path'
 
         # also make some updates
         self.example['items'][0]['biography'] = 'changed'
         self.example['items'][1]['images'].append(deepcopy(self.example['items'][1]['images'][0]))
+        self.example['items'][1]['images'][-1]['path'] = 'and one more'
 
         # two equal images
-        self.post(self.url, self.example, expected_status=400)
+        self.post(self.url, self.example, expected_status=204)
 
-        self.example['items'][1]['images'][1]['path'] = 'changed'
+        self.assertEqual(Person.objects.count(), 3)
+        self.assertEqual(PersonTMDBImage.objects.count(), 4)

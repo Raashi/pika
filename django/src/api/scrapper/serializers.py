@@ -2,7 +2,6 @@ from typing import Type
 
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models import Q
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 
@@ -10,7 +9,7 @@ from rest_framework.serializers import ModelSerializer, ListSerializer, HiddenFi
 from rest_framework.fields import empty
 from rest_framework.validators import UniqueValidator
 
-from .validators import MultipleUniqueValidator
+from .validators import MultipleUniqueValidator, NotBlankUniqueValidator
 
 UserModel = get_user_model()
 
@@ -51,7 +50,7 @@ class BaseUploadSerializer(ModelSerializer):
                 if isinstance(validator, UniqueValidator):
                     field_obj.validators.remove(validator)
                     # remember validator
-                    field_obj.unique_validator = validator
+                    field_obj.unique_validator = NotBlankUniqueValidator(validator)
                     break
 
     def try_get_instance(self, validated_data):
