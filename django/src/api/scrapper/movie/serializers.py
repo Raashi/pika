@@ -21,14 +21,14 @@ class MovieReleaseDateUploadSerializer(BaseUploadSerializer):
         extra_kwargs = {
             'movie': {'required': False}
         }
-        lookup_field = ['type', 'country']
+        lookup_fields = ['type', 'country']
 
 
 class MoviePosterSerializer(BaseUploadSerializer):
     class Meta:
         model = MoviePoster
         fields = ['movie'] + TMDB_image_fields
-        lookup_field = 'path'
+        lookup_fields = ['path']
         extra_kwargs = {'movie': {'required': False}}
 
 
@@ -36,7 +36,7 @@ class MovieBackdropSerializer(BaseUploadSerializer):
     class Meta:
         model = MovieBackdrop
         fields = ['movie'] + TMDB_image_fields
-        lookup_field = 'path'
+        lookup_fields = ['path']
         extra_kwargs = {'movie': {'required': False}}
 
 
@@ -44,7 +44,7 @@ class MovieVideoSerializer(BaseUploadSerializer):
     class Meta:
         model = MovieVideo
         fields = ['movie'] + TMDB_video_fields
-        lookup_field = 'tmdb_id'
+        lookup_fields = ['tmdb_id']
         extra_kwargs = {'movie': {'required': False}}
 
 
@@ -52,7 +52,7 @@ class MovieReviewSerializer(BaseUploadSerializer):
     class Meta:
         model = MovieReview
         fields = ['movie'] + TMDB_review_fields
-        lookup_field = 'tmdb_id'
+        lookup_fields = ['tmdb_id']
 
 
 class MovieParticipationSerializer(BaseUploadSerializer):
@@ -98,52 +98,48 @@ class MovieUploadSerializer(BaseUploadSerializer):
             'releases', 'posters', 'backdrops', 'videos', 'reviews', 'people'
         ]
 
-    def save(self, **kwargs):
+    def save(self, return_fresh=False):
         # process Collection
-        collection_serializer = self.validated_data.pop('collection')
-        if collection_serializer is not None:
-            collection = collection_serializer.save()
-        else:
-            collection = None
+        collection = self.validated_data.pop('collection')
+        if collection is not None:
+            collection = self.fields['collection'].save(validated_data=collection, instance=None)
         self.validated_data['collection'] = collection
 
         # process Genres
-        genre_serializers = self.validated_data.pop('genres')
-        genres = [genre_serializer.save() for genre_serializer in genre_serializers]
-        self.validated_data['genres'] = genres
+        self.validated_data['genres'] = self.save_arr_of_m2m(self.validated_data.pop('genres'), 'genres')
 
         # process Companies
-        company_serializers = self.validated_data.pop('production_companies')
-        companies = [company_serializer.save() for company_serializer in company_serializers]
-        self.validated_data['production_companies'] = companies
+        self.validated_data['production_companies'] = self.save_arr_of_m2m(
+            self.validated_data.pop('production_companies'), 'production_companies'
+        )
 
         # process keywords
-        keyword_serializers = self.validated_data.pop('keywords')
-        keywords = [keyword_serializer.save() for keyword_serializer in keyword_serializers]
-        self.validated_data['keywords'] = keywords
+        self.validated_data['keywords'] = self.save_arr_of_m2m(self.validated_data.pop('keywords'), 'keywords')
 
         # production_countries and spoken_languages will process automatically
 
-        release_serializers = self.validated_data.pop('releases')
-        poster_serializers = self.validated_data.pop('posters')
-        backdrop_serializers = self.validated_data.pop('backdrops')
-        video_serializers = self.validated_data.pop('videos')
-        review_serializers = self.validated_data.pop('reviews')
-        people_serializers = self.validated_data.pop('people')
+        releases = self.validated_data.pop('releases')
+        posters = self.validated_data.pop('posters')
+        backdrops = self.validated_data.pop('backdrops')
+        videos = self.validated_data.pop('videos')
+        reviews = self.validated_data.pop('reviews')
+        people = self.validated_data.pop('people')
 
         # --------- create or update movie ---------------------
 
-        movie: Movie = super().save(**kwargs)
+        movie: Movie = super().save()
 
         # save many2many fields
         movie.save()
 
         # process related objects
-        self.updated_related(release_serializers, movie)
-        self.updated_related(poster_serializers, movie)
-        self.updated_related(backdrop_serializers, movie)
-        self.updated_related(video_serializers, movie)
-        self.updated_related(review_serializers, movie)
-        self.updated_related(people_serializers, movie)
+        self.save_arr_of_related(releases, 'releases', 'movie', movie)
+        self.save_arr_of_related(posters, 'posters', 'movie', movie)
+        self.save_arr_of_related(backdrops, 'backdrops', 'movie', movie)
+        self.save_arr_of_related(videos, 'videos', 'movie', movie)
+        self.save_arr_of_related(reviews, 'reviews', 'movie', movie)
+        self.save_arr_of_related(people, 'people', 'movie', movie)
 
+        if return_fresh:
+            movie.refresh_from_db()
         return movie

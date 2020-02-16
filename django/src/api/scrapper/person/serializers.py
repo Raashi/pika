@@ -6,7 +6,7 @@ class PersonImageUploadSerializer(BaseUploadSerializer):
     class Meta:
         model = PersonTMDBImage
         fields = ['person'] + TMDB_image_fields
-        lookup_field = 'path'
+        lookup_fields = ['path']
         extra_kwargs = {'person': {'required': False}}
 
 
@@ -23,8 +23,6 @@ class PersonUploadSerializer(BaseUploadSerializer):
 
         person = super().save(**kwargs)
 
-        for image in images:
-            image['person'] = person
-        self.fields['images'].hard_save(images)
+        self.save_arr_of_related(images, 'images', 'person', person)
 
         return person

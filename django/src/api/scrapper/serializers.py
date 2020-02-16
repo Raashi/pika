@@ -10,6 +10,8 @@ from rest_framework.serializers import ModelSerializer, ListSerializer, HiddenFi
 from rest_framework.fields import empty
 from rest_framework.validators import UniqueValidator
 
+from .validators import MultipleUniqueValidator
+
 UserModel = get_user_model()
 
 
@@ -18,40 +20,32 @@ TMDB_video_fields = ['tmdb_id', 'language', 'country', 'key', 'name', 'size', 't
 TMDB_review_fields = ['tmdb_id', 'author', 'content', 'url', 'language']
 
 
-class MultipleUniqueValidator:
-    message = 'Multiple equal (by lookup fields) objects'
-    requires_context = True
-
-    def __init__(self, queryset=None, message=None, lookup='exact'):
-        self.queryset = queryset
-        self.message = message or self.message
-        self.lookup = lookup
-
-    def __call__(self, arr, serializer):
-        checks = {}
-
-        for field_name, field_obj in serializer.child.fields.items():
-            if hasattr(field_obj, 'unique_validator'):
-                checks[field_name] = set()
-
-        for attrs in arr:
-            for field_name, field_checks in checks.items():
-                if field_name not in attrs or attrs[field_name] is None:
-                    continue
-                if attrs[field_name] in field_checks:
-                    raise ValidationError(self.message)
-                field_checks.add(attrs[field_name])
-
-
 class BaseUploadSerializer(ModelSerializer):
+    """
+    all lookup fields must be required and not_null
+    """
+
     class Meta:
         model: Type[models.Model] = None
-        lookup_field: str = None
+        lookup_fields: str or list = None
 
     def __init__(self, instance=None, data=empty, **kwargs):
-        self.lookup_field = self.get_lookup_field()
         super().__init__(instance=instance, data=data, **kwargs)
 
+        self.lookup_fields = self._init_lookup_fields()
+        self._init_unique_validators()
+
+    def _init_lookup_fields(self):
+        lookup_fields = getattr(self.Meta, 'lookup_fields', None)
+        if lookup_fields is None:
+            lookup_fields = self.Meta.model._meta.pk.name
+
+        if isinstance(lookup_fields, str):
+            lookup_fields = [lookup_fields]
+
+        return lookup_fields
+
+    def _init_unique_validators(self):
         for field_obj in self.fields.values():
             for validator in field_obj.validators:
                 if isinstance(validator, UniqueValidator):
@@ -60,58 +54,46 @@ class BaseUploadSerializer(ModelSerializer):
                     field_obj.unique_validator = validator
                     break
 
-    def get_lookup_field(self):
-        lookup_field = getattr(self.Meta, 'lookup_field', None)
-        if lookup_field is None:
-            lookup_field = self.Meta.model._meta.pk.name
-
-        if isinstance(lookup_field, str):
-            lookup_field = [lookup_field]
-
-        return lookup_field
-
-    def updated_related(self, serializers, movie, field='id'):
-        objects = []
-        for serializer in serializers:
-            serializer.validated_data['movie'] = movie
-            objects.append(serializer.save())
-
-        if len(objects):
-            manager = objects[0].objects
-            values = [getattr(obj, field) for obj in objects]
-            manager.filter(~Q(**{field + '__in': values})).delete()
-
-    def try_get_instance(self, data):
+    def try_get_instance(self, validated_data):
+        """raise Exception if there are multiples in db (by lookup_fields)"""
         attrs = {}
-        for field in self.lookup_field:
+        for field in self.lookup_fields:
             # all lookup_fields are required
-            attrs[field] = data[field]
+            attrs[field] = validated_data[field]
 
         try:
             return self.Meta.model.objects.get(**attrs)
         except self.Meta.model.DoesNotExist:
             pass
-        # return status-code=500 if there are multiples in db
 
-    def hard_save(self, validated_data, instance):
-        self.instance = instance
-        self._errors = {}
-        self._validated_data = validated_data
-        return self.save()
+    # helper shortcuts
+    def save_arr_of_related(self, validated_data, field_name, related_field_name, related_obj):
+        for item in validated_data:
+            item[related_field_name] = related_obj
+        return self.fields[field_name].save(validated_data=validated_data)
+
+    def save_arr_of_m2m(self, validated_data, field_name):
+        return self.fields[field_name].save(validated_data=validated_data)
 
 
 class BaseListSerializer(ListSerializer):
     def __init__(self, *args, **kwargs):
+        if 'child' in kwargs:
+            assert isinstance(kwargs['child'], BaseUploadSerializer)
+
         super().__init__(*args, **kwargs)
+
         self.instances = []
         self.validators.append(MultipleUniqueValidator())
-        self.lookup_field = self.child.lookup_field
+        self.lookup_fields = self.child.lookup_fields
 
     def to_internal_value(self, data):
+        # copied from rest framework sources
         if not isinstance(data, list):
             message = self.error_messages['not_a_list'].format(input_type=type(data).__name__)
             raise ValidationError({api_settings.NON_FIELD_ERRORS_KEY: [message]}, code='not_a_list')
 
+        # copied from rest framework sources
         if not self.allow_empty and len(data) == 0:
             message = self.error_messages['empty']
             raise ValidationError({api_settings.NON_FIELD_ERRORS_KEY: [message]}, code='empty')
@@ -141,23 +123,25 @@ class BaseListSerializer(ListSerializer):
 
         return ret
 
-    def _hard_save(self, validated_data):
-        ret = []
-
-        for instance, attrs in zip(self.instances, validated_data):
-            self.child._errors = {}
-            self.child._validated_data = attrs
-            self.child.instance = instance
-            ret.append(self.child.hard_save(attrs, instance))
-
-        return ret
-
-    def hard_save(self, validated_data):
-        return self._hard_save(validated_data)
+    def save_child(self, instance, validated_data):
+        setattr(self.child, '_errors', [])
+        setattr(self.child, '_validated_data', validated_data)
+        setattr(self.child, 'instance', instance)
+        return self.child.save()
 
     def save(self, **kwargs):
-        validated_data = [dict(list(attrs.items()) + list(kwargs.items())) for attrs in self.validated_data]
-        return self._hard_save(validated_data)
+        """pass validated data in kwargs if this list serializer is child of some other serializer"""
+        children = []
+
+        if self.root != self:
+            validated_data = kwargs['validated_data']
+        else:
+            validated_data = self.validated_data
+
+        for item, instance in zip(validated_data, self.instances):
+            children.append(self.save_child(instance, item))
+
+        return children
 
 
 class LoginSerializer(ModelSerializer):

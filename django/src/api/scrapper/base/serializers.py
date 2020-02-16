@@ -25,7 +25,7 @@ class JobUploadSerializer(BaseUploadSerializer):
     class Meta:
         model = Job
         fields = ['department', 'name', 'rus_name']
-        lookup_field = 'name'
+        lookup_fields = ['name']
 
 
 class CompanyUploadSerializer(BaseUploadSerializer):
