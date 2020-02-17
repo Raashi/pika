@@ -41,8 +41,19 @@ def get_review_template(**kwargs):
 
 person = {
     'id': 1,
+    'imdb_id': 'tt1234567',
     'name': 'test',
-    'images': []
+    'rus_name': 'rus_test',
+    'gender': 0,
+    'birthday': '2000-01-31',
+    'deathday': '2000-01-31',
+    'known_for_department': 'Crew',
+    'biography': 'test biography',
+    'rus_biography': 'rus test biography',
+    'popularity': '2.34',
+    'profile': '/sifdksjfsdkf.jpg',
+    'adult': True,
+    'homepage': 'http://google.com',
 }
 
 

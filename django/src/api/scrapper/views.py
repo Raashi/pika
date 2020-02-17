@@ -28,7 +28,10 @@ class BaseScrapperUploadView(GenericAPIView):
 
     def process_list(self, serializer_class, data):
         self.required_field(data, 'items')
-        return BaseListSerializer(data=data, child=serializer_class())
+
+        serializer = BaseListSerializer(data=data['items'], child=serializer_class())
+        serializer.is_valid(True)
+        return serializer.save()
 
     def process_compositions(self, compositions, data):
         serializers = []
@@ -51,7 +54,7 @@ class BaseScrapperUploadView(GenericAPIView):
         assert any((serializer_class, compositions))
 
         if serializer_class:
-            return self.process_list(self.get_serializer_class(), data['items'])
+            return self.process_list(self.get_serializer_class(), data)
         else:
             return self.process_compositions(self.compositions, data)
 
