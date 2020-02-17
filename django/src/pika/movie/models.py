@@ -49,7 +49,7 @@ class Movie(pika_models.Model):
     homepage = models.URLField(_('Homepage'), blank=True, null=True)
     rus_homepage = models.URLField(_('Homepage for Russia'), blank=True, null=True)
 
-    adult = models.BooleanField(_('Adult'))
+    adult = models.BooleanField(_('Adult'), default=False)
     budget = models.IntegerField(_('Budget'), blank=True, null=True)
     popularity = models.DecimalField(_('Popularity'), decimal_places=2, max_digits=6)
     runtime = models.IntegerField(_('Movie runtime'), blank=True, null=True)
@@ -136,14 +136,14 @@ class MovieVideo(pika_models.TMDBVideo):
         verbose_name_plural = _('Movie videos')
 
 
-class MovieParticipation(Participation):
+class MovieParticipant(Participation):
     movie = models.ForeignKey(to=Movie, on_delete=models.CASCADE, related_name='people',
                               verbose_name=_('Movie'))
 
     class Meta:
-        db_table = 'movie_participation'
-        verbose_name = 'Participation'
-        verbose_name_plural = 'Participation'
+        db_table = 'movie_participant'
+        verbose_name = 'Movie participant'
+        verbose_name_plural = 'Movie participants'
 
 
 class MovieReview(Review):

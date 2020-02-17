@@ -1,1 +1,1 @@
-from .views import CountryUploadView, LanguageUploadView
+from .views import CountriesUploadView, LanguagesUploadView, JobsUploadView, BasesUploadView

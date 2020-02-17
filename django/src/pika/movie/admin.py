@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Collection, Movie, MovieBackdrop, MoviePoster, MovieReleaseDate, MovieVideo, MovieParticipation, \
+from .models import Collection, Movie, MovieBackdrop, MoviePoster, MovieReleaseDate, MovieVideo, MovieParticipant, \
     MovieReview
 
 
@@ -25,7 +25,7 @@ class MovieReviewAdmin(admin.StackedInline):
 
 
 class MovieParticipationAdmin(admin.StackedInline):
-    model = MovieParticipation
+    model = MovieParticipant
 
 
 class MovieAdmin(admin.ModelAdmin):

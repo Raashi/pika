@@ -19,24 +19,41 @@ class BaseScrapperUploadView(GenericAPIView):
     authentication_classes = [ScrapperAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @staticmethod
-    def init_list_serializer(serializer_class, data):
-        return BaseListSerializer(data=data, child=serializer_class())
+    compositions = None
 
     @staticmethod
     def required_field(data, field):
         if field not in data:
             raise ValidationError({field: Field.default_error_messages['required']})
 
-    def init_serializer(self, request):
-        data = request.data
+    def process_list(self, serializer_class, data):
         self.required_field(data, 'items')
-        return self.init_list_serializer(self.get_serializer_class(), data['items'])
+        return BaseListSerializer(data=data, child=serializer_class())
+
+    def process_compositions(self, compositions, data):
+        serializers = []
+
+        for field, serializer_class in compositions:
+            self.required_field(data, field)
+            serializer = BaseListSerializer(data=data[field], child=serializer_class())
+            serializer.is_valid(True)
+
+            serializers.append(serializer)
+
+        for serializer in serializers:
+            serializer.save()
 
     def process_uploading(self, request):
-        serializer = self.init_serializer(request)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        data = request.data
+
+        serializer_class = self.get_serializer_class()
+        compositions = self.compositions
+        assert any((serializer_class, compositions))
+
+        if serializer_class:
+            return self.process_list(self.get_serializer_class(), data['items'])
+        else:
+            return self.process_compositions(self.compositions, data)
 
     def post(self, request):
         self.process_uploading(request)

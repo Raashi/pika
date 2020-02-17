@@ -22,10 +22,10 @@ class Person(pika_models.Model):
     biography = models.CharField(_('Biography'), max_length=256, blank=True, null=True)
     rus_biography = models.CharField(_('Russian biography'), max_length=256, blank=True, null=True)
 
-    popularity = models.DecimalField(_('Popularity'), decimal_places=2, max_digits=6)
+    popularity = models.DecimalField(_('Popularity'), decimal_places=2, max_digits=6, default='0.00')
 
     profile = pika_models.ProfileImageField()
-    adult = models.BooleanField(_('Adult'))
+    adult = models.BooleanField(_('Adult'), default=False)
 
     homepage = models.URLField(_('Homepage'), blank=True, null=True)
 

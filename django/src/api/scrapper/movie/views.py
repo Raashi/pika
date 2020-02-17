@@ -1,7 +1,18 @@
 from api.scrapper.views import BaseScrapperUploadView
 
-from .serializers import MovieUploadSerializer
+from .serializers import *
 
 
-class MovieUploadView(BaseScrapperUploadView):
-    serializer_class = MovieUploadSerializer
+class MoviesUploadView(BaseScrapperUploadView):
+    serializer_class = MovieSerializer
+
+
+class MoviesRelationsUploadView(BaseScrapperUploadView):
+    compositions = [
+        ('releases', MovieReleaseDateSerializer),
+        ('posters', MoviePosterSerializer),
+        ('backdrops', MovieBackdropSerializer),
+        ('videos', MovieVideoSerializer),
+        ('participants', MovieParticipantSerializer),
+        ('reviews', MovieReviewSerializer),
+    ]

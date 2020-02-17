@@ -1,7 +1,11 @@
 from api.scrapper.views import BaseScrapperUploadView
 
-from .serializers import PersonUploadSerializer
+from .serializers import PersonUploadSerializer, PersonImageUploadSerializer
 
 
-class PersonUploadView(BaseScrapperUploadView):
+class PersonsUploadView(BaseScrapperUploadView):
     serializer_class = PersonUploadSerializer
+
+
+class PersonsImagesUploadView(BaseScrapperUploadView):
+    serializer_class = PersonImageUploadSerializer

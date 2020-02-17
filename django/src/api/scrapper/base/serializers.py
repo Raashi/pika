@@ -2,6 +2,9 @@ from api.scrapper.serializers import BaseUploadSerializer
 from pika.base.models import Keyword, Job, Company, Genre
 from pika.db.models import Language, Country
 
+__all__ = ['LanguageUploadSerializer', 'CountryUploadSerializer', 'KeywordUploadSerializer', 'JobUploadSerializer',
+           'CompanyUploadSerializer', 'GenreUploadSerializer']
+
 
 class LanguageUploadSerializer(BaseUploadSerializer):
     class Meta:

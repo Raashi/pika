@@ -36,10 +36,9 @@ class VeryMultipleUniqueValidator:
             return
 
         for field in serializer.child.Meta.child_fields:
+            checks[field] = {}
             for child_field, child_field_obj in serializer.child.fields[field].child.fields.items():
                 if hasattr(child_field_obj, 'unique_validator'):
-                    if field not in checks:
-                        checks[field] = {}
                     checks[field][child_field] = set()
 
         for item in arr:

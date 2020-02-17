@@ -77,4 +77,5 @@ class GenderField(models.IntegerField):
         kwargs['choices'] = GENDER_CHOICES
         kwargs['blank'] = True
         kwargs['null'] = True
+        kwargs['default'] = 0
         super().__init__(verbose_name=verbose_name, **kwargs)
