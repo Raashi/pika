@@ -40,7 +40,12 @@ INSTALLED_APPS = [
 
     'rest_framework',
 
+    'pika.tokens',
     'pika.user',
+    'pika.db',
+    'pika.base',
+    'pika.person',
+    'pika.movie',
 ]
 
 MIDDLEWARE = [
@@ -53,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'pika.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATES = [
     {
@@ -84,7 +89,7 @@ DATABASES = {
     }
 }
 
-# auth settings
+# tokens settings
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -106,7 +111,7 @@ AUTH_USER_MODEL = 'user.User'
 
 AUTH_HEADER_PREFIX = 'Bearer'
 
-AUTHENTICATION_BACKENDS = ['pika.auth.AdminAuthBackend']
+AUTHENTICATION_BACKENDS = ['pika.auth.DjangoAdminAuthBackend']
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -127,6 +132,56 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# rest framework
+
+REST_FRAMEWORK = {
+
+}
+
+# TMDB config - later it should be updated via tmdb's api
+TMDB_IMAGES = {
+    "base_url": "http://image.tmdb.org/t/p/",
+    "secure_base_url": "https://image.tmdb.org/t/p/",
+    "backdrop_sizes": [
+      "w300",
+      "w780",
+      "w1280",
+      "original"
+    ],
+    "logo_sizes": [
+      "w45",
+      "w92",
+      "w154",
+      "w185",
+      "w300",
+      "w500",
+      "original"
+    ],
+    "poster_sizes": [
+      "w92",
+      "w154",
+      "w185",
+      "w342",
+      "w500",
+      "w780",
+      "original"
+    ],
+    "profile_sizes": [
+      "w45",
+      "w185",
+      "h632",
+      "original"
+    ],
+    "still_sizes": [
+      "w92",
+      "w185",
+      "w300",
+      "original"
+    ]
+}
+
+
+# for local development
 try:
     from .local import *
 except ImportError:

@@ -37,3 +37,7 @@ class User(AbstractBaseUser):
 
     def has_perm(self, perm, obj=None):
         return self.is_admin
+
+    @classmethod
+    def admins(cls):
+        return cls.objects.filter(is_admin=True, is_active=True)

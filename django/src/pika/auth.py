@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 UserModel = get_user_model()
 
 
-class AdminAuthBackend:
+class DjangoAdminAuthBackend:
     def authenticate(self, request, username, password):
         try:
             user = UserModel.objects.get(username=username, is_admin=True)
