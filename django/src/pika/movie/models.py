@@ -7,13 +7,13 @@ from pika.person.models import Person, Participation
 
 
 MOVIE_STATUS_CHOICES = [
-    (-1, 'Unknown'),
-    (0, 'Rumored'),
-    (1, 'Planned'),
-    (2, 'In production'),
-    (3, 'Post production'),
-    (4, 'Released'),
-    (5, 'Cancelled'),
+    (0, 'Unknown'),
+    (1, 'Rumored'),
+    (2, 'Planned'),
+    (3, 'In production'),
+    (4, 'Post production'),
+    (5, 'Released'),
+    (6, 'Cancelled'),
 ]
 
 
@@ -58,7 +58,7 @@ class Movie(pika_models.Model):
 
     # world earliest release
     release_date = models.DateField(_('Release date'), blank=True, null=True)
-    status = models.IntegerField(_('Status'), choices=MOVIE_STATUS_CHOICES, default=-1)
+    status = models.IntegerField(_('Status'), choices=MOVIE_STATUS_CHOICES, default=0)
 
     # images
     poster = pika_models.PosterImageField()
@@ -121,8 +121,7 @@ class MovieVideo(pika_models.TMDBVideo):
 
 
 class MovieParticipant(Participation):
-    movie = models.ForeignKey(to=Movie, on_delete=models.CASCADE, related_name='people',
-                              verbose_name=_('Movie'))
+    movie = models.ForeignKey(to=Movie, on_delete=models.CASCADE, related_name='participants', verbose_name=_('Movie'))
 
     class Meta:
         db_table = 'movie_participant'
@@ -131,8 +130,7 @@ class MovieParticipant(Participation):
 
 
 class MovieReview(Review):
-    movie = models.ForeignKey(to=Movie, on_delete=models.CASCADE, related_name='reviews',
-                              verbose_name=_('Movie'))
+    movie = models.ForeignKey(to=Movie, on_delete=models.CASCADE, related_name='reviews', verbose_name=_('Movie'))
 
     class Meta:
         db_table = 'movie_review'

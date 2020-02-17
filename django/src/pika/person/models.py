@@ -46,7 +46,7 @@ class PersonTMDBImage(pika_models.TMDBImage):
 
 
 class Participation(pika_models.Model):
-    person = models.ForeignKey(to=Person, on_delete=models.CASCADE, related_name='participations',
+    person = models.ForeignKey(to=Person, on_delete=models.CASCADE, related_name='participants',
                                verbose_name=_('Person'))
     job = models.ForeignKey(to=Job, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_('Job'))
 

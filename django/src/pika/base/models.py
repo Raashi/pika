@@ -89,7 +89,7 @@ class Review(pika_models.Model):
     # we should still have id as AutoField to reduce db size
     tmdb_id = models.CharField(_('TMDB Id'), max_length=32, unique=True, db_index=True)
     author = models.CharField(_('Author'), max_length=64, blank=True, null=True)
-    content = models.TextField(_('Text'))
+    content = models.TextField(_('Text'), default='')
     url = models.URLField(_('Review link'), blank=True, null=True)
     language = models.ForeignKey(to=pika_models.Language, on_delete=models.SET_NULL, related_name='reviews',
                                  verbose_name=_('Language'), blank=True, null=True)

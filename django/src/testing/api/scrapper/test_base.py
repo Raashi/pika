@@ -141,16 +141,15 @@ class JobUploadTestCase(ScrapperBaseTestCase):
 
         self.post(self.url, data, expected_status=400)
 
-        # now change department or art
+        # change name - no error
         data['items'][1]['name'] = 'changed'
         self.post(self.url, data, expected_status=204)
 
         # now change department
-        data['items'][1]['name'] = data['items'][0]['name']
         data['items'][1]['department'] = 'Visual Effects'
         self.post(self.url, data, expected_status=204)
 
-        self.assertEqual(Job.objects.count(), 3)
+        self.assertEqual(Job.objects.count(), 2)
 
 
 class TestBasesUploading(ScrapperBaseTestCase):
@@ -179,13 +178,7 @@ class TestBasesUploading(ScrapperBaseTestCase):
         super().setUpTestData()
 
     def test_required_fields(self):
-        response = self.post(self.url, {}, expected_status=400).json()
-        self.assertEqual(set(response), set(self.required_fields))
-
-        data = {field: [{}] for field in self.required_fields}
-        response = self.post(self.url, data, expected_status=400).json()
-        for field, errors in response.items():
-            self.assertEqual(self.required_fields[field], set(errors[0]))
+        self._test_inner_required_fields(self.url, self.required_fields)
 
     def test_upload(self):
         self.post(self.url, self.example, expected_status=204)

@@ -1,5 +1,12 @@
 from copy import deepcopy
 
+
+def get_template(template, **kwargs):
+    data = deepcopy(template)
+    data.update(kwargs)
+    return data
+
+
 genre = {
     'id': 1,
     'name': 'genre',
@@ -145,7 +152,19 @@ def get_movie_template(**kwargs):
     return data
 
 
-def get_template(template, **kwargs):
-    data = deepcopy(template)
-    data.update(kwargs)
-    return data
+release = {
+    'movie': 1,
+    'type': 1,
+    'date': '2020-02-17T12:08:43.366501',
+    'country': 'RU'
+}
+
+
+participant = {
+    'movie': 1,
+    'person': 1,
+    'job': 'job',
+    'character': 'character',
+    'rus_character': 'rus character',
+    'gender': 2
+}

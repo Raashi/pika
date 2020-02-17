@@ -52,12 +52,13 @@ class TMDBImage(Model):
 
 
 VIDEO_TYPE_CHOICES = [
-    (0, 'Trailer'),
-    (1, 'Teaser'),
-    (2, 'Clip'),
-    (3, 'Featurette'),
-    (4, 'Behind the Scenes'),
-    (5, 'Bloopers')
+    (0, 'Other'),
+    (1, 'Trailer'),
+    (2, 'Teaser'),
+    (3, 'Clip'),
+    (4, 'Featurette'),
+    (5, 'Behind the Scenes'),
+    (6, 'Bloopers'),
 ]
 
 
@@ -71,8 +72,8 @@ class TMDBVideo(Model):
     key = models.CharField(_('Key'), max_length=32, blank=True, null=True)
     name = models.CharField(_('Video name'), max_length=64, blank=True, null=True)
 
-    size = models.IntegerField(_('Size'))
-    type = models.IntegerField(_('Type'), choices=VIDEO_TYPE_CHOICES)
+    size = models.IntegerField(_('Size'), default=-1)
+    type = models.IntegerField(_('Type'), choices=VIDEO_TYPE_CHOICES, default=6)
 
     class Meta:
         abstract = True
