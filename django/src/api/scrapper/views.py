@@ -21,13 +21,22 @@ class BaseScrapperUploadView(GenericAPIView):
 
     compositions = None
 
+    def get_serializer_class(self):
+        """disable assertion in superclass"""
+        return self.serializer_class
+
     @staticmethod
-    def required_field(data, field):
-        if field not in data:
-            raise ValidationError({field: Field.default_error_messages['required']})
+    def require_fields(data, fields):
+        errors = {}
+        for field in fields:
+            if field not in data:
+                errors[field] = Field.default_error_messages['required']
+
+        if errors:
+            raise ValidationError(errors)
 
     def process_list(self, serializer_class, data):
-        self.required_field(data, 'items')
+        self.require_fields(data, ['items'])
 
         serializer = BaseListSerializer(data=data['items'], child=serializer_class())
         serializer.is_valid(True)
@@ -35,13 +44,22 @@ class BaseScrapperUploadView(GenericAPIView):
 
     def process_compositions(self, compositions, data):
         serializers = []
+        errors = {}
+
+        self.require_fields(data, map(lambda comp: comp[0], compositions))
 
         for field, serializer_class in compositions:
-            self.required_field(data, field)
             serializer = BaseListSerializer(data=data[field], child=serializer_class())
-            serializer.is_valid(True)
+
+            # put serializers error into sub-json
+            is_valid = serializer.is_valid(False)
+            if not is_valid:
+                errors[field] = serializer.errors
 
             serializers.append(serializer)
+
+        if errors:
+            raise ValidationError(errors)
 
         for serializer in serializers:
             serializer.save()
@@ -75,4 +93,5 @@ class LoginView(GenericAPIView):
 
         token, _ = ScrapperAccessToken.get_or_create(user.id)
 
+        # TODO: put keyword to settings
         return Response(data={'Bearer': token}, status=200)

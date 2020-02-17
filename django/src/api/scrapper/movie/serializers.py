@@ -1,17 +1,11 @@
 from api.scrapper.serializers import BaseUploadSerializer, TMDB_image_fields, TMDB_video_fields, TMDB_review_fields
 
-from pika.movie.models import Movie, Collection, MovieReleaseDate, MoviePoster, MovieBackdrop, MovieVideo, \
+from pika.movie.models import Movie, MovieReleaseDate, MoviePoster, MovieBackdrop, MovieVideo, \
     MovieReview, MovieParticipant
 
 
-__all__ = ['CollectionSerializer', 'MovieReleaseDateSerializer', 'MoviePosterSerializer', 'MovieBackdropSerializer',
-           'MovieVideoSerializer', 'MovieReviewSerializer', 'MovieParticipantSerializer', 'MovieSerializer']
-
-
-class CollectionSerializer(BaseUploadSerializer):
-    class Meta:
-        model = Collection
-        fields = ['id', 'name', 'rus_name', 'poster', 'backdrop', 'overview', 'rus_overview']
+__all__ = ['MovieReleaseDateSerializer', 'MoviePosterSerializer', 'MovieBackdropSerializer', 'MovieVideoSerializer',
+           'MovieReviewSerializer', 'MovieParticipantSerializer', 'MovieSerializer']
 
 
 class MovieReleaseDateSerializer(BaseUploadSerializer):

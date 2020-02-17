@@ -2,28 +2,12 @@ from django.db import models
 from django.utils.translation import ugettext as _
 
 from pika.db import models as pika_models
-from pika.base.models import Genre, Company, Keyword, Job, Review
+from pika.base.models import Genre, Company, Keyword, Job, Review, Collection
 from pika.person.models import Person, Participation
 
 
-class Collection(pika_models.Model):
-    id = pika_models.TMDBId()
-    name = models.CharField(_('Collection name'), max_length=64)
-    rus_name = models.CharField(_('Collection name in russian'), max_length=64, blank=True, null=True)
-
-    poster = pika_models.PosterImageField()
-    backdrop = pika_models.BackdropImageField()
-
-    overview = models.CharField(_('Overview'), max_length=256, blank=True, null=True)
-    rus_overview = models.CharField(_('Overview in russian'), max_length=256, blank=True, null=True)
-
-    class Meta:
-        db_table = 'collection'
-        verbose_name = _('Collection')
-        verbose_name_plural = _('Collections')
-
-
 MOVIE_STATUS_CHOICES = [
+    (-1, 'Unknown'),
     (0, 'Rumored'),
     (1, 'Planned'),
     (2, 'In production'),
@@ -51,30 +35,30 @@ class Movie(pika_models.Model):
 
     adult = models.BooleanField(_('Adult'), default=False)
     budget = models.IntegerField(_('Budget'), blank=True, null=True)
-    popularity = models.DecimalField(_('Popularity'), decimal_places=2, max_digits=6)
+    popularity = models.DecimalField(_('Popularity'), decimal_places=2, max_digits=6, blank=True, null=True)
     runtime = models.IntegerField(_('Movie runtime'), blank=True, null=True)
     revenue = models.IntegerField(_('Movie revenue'), blank=True, null=True)
 
     # marks
-    vote_average = models.DecimalField(_('Vote average'), max_digits=4, decimal_places=2)
-    vote_count = models.IntegerField(_('Vote count'))
+    vote_average = models.DecimalField(_('Vote average'), max_digits=4, decimal_places=2, blank=True, null=True)
+    vote_count = models.IntegerField(_('Vote count'), default=0)
 
     # keys
     collection = models.ForeignKey(to=Collection, on_delete=models.SET_NULL, related_name='movies',
                                    verbose_name=_('Collection'), blank=True, null=True)
-    genres = models.ManyToManyField(to=Genre, related_name='movies', verbose_name=_('Genres'))
+    genres = models.ManyToManyField(to=Genre, related_name='movies', verbose_name=_('Genres'), blank=True)
     original_language = models.ForeignKey(to=pika_models.Language, on_delete=models.SET_NULL, related_name='movies',
                                           verbose_name=_('Original language'), blank=True, null=True)
     production_companies = models.ManyToManyField(to=Company, related_name='movies',
-                                                  verbose_name=_('Production companies'))
+                                                  verbose_name=_('Production companies'), blank=True)
     production_countries = models.ManyToManyField(to=pika_models.Country, related_name='movies',
-                                                  verbose_name=_('Production countries'))
-    spoken_languages = models.ManyToManyField(to=pika_models.Language, related_name='in_movies')
-    keywords = models.ManyToManyField(to=Keyword, related_name='movies')
+                                                  verbose_name=_('Production countries'), blank=True)
+    spoken_languages = models.ManyToManyField(to=pika_models.Language, related_name='in_movies', blank=True)
+    keywords = models.ManyToManyField(to=Keyword, related_name='movies', blank=True)
 
     # world earliest release
     release_date = models.DateField(_('Release date'), blank=True, null=True)
-    status = models.IntegerField(_('Status'), choices=MOVIE_STATUS_CHOICES)
+    status = models.IntegerField(_('Status'), choices=MOVIE_STATUS_CHOICES, default=-1)
 
     # images
     poster = pika_models.PosterImageField()

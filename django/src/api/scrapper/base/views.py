@@ -20,4 +20,5 @@ class BasesUploadView(BaseScrapperUploadView):
         ('genres', GenreUploadSerializer),
         ('keywords', KeywordUploadSerializer),
         ('companies', CompanyUploadSerializer),
+        ('collections', CollectionSerializer),
     ]

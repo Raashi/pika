@@ -96,3 +96,20 @@ class Review(pika_models.Model):
 
     class Meta:
         abstract = True
+
+
+class Collection(pika_models.Model):
+    id = pika_models.TMDBId()
+    name = models.CharField(_('Collection name'), max_length=64)
+    rus_name = models.CharField(_('Collection name in russian'), max_length=64, blank=True, null=True)
+
+    poster = pika_models.PosterImageField()
+    backdrop = pika_models.BackdropImageField()
+
+    overview = models.CharField(_('Overview'), max_length=256, blank=True, null=True)
+    rus_overview = models.CharField(_('Overview in russian'), max_length=256, blank=True, null=True)
+
+    class Meta:
+        db_table = 'collection'
+        verbose_name = _('Collection')
+        verbose_name_plural = _('Collections')

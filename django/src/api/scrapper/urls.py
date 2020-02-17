@@ -8,7 +8,7 @@ app_name = 'scrapper'
 urlpatterns = [
     path('login/', scrapper.LoginView.as_view(), name='login'),
 
-    path('countries/', scrapper.base.CountriesUploadView.as_view(), name='counties'),
+    path('countries/', scrapper.base.CountriesUploadView.as_view(), name='countries'),
     path('languages/', scrapper.base.LanguagesUploadView.as_view(), name='languages'),
     path('jobs/', scrapper.base.JobsUploadView.as_view(), name='jobs'),
     path('bases/', scrapper.base.BasesUploadView.as_view(), name='bases'),
