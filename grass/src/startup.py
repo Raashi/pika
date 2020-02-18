@@ -1,6 +1,6 @@
-from main import add
+from main import app
 
+from sources import startups
 
-for i in range(2):
-    for j in range(2):
-        add.delay(i, j)
+for startup in startups:
+    startup()
