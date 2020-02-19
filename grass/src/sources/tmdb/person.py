@@ -1,1 +1,1 @@
-from .base import api_key, url
+from .client import api_key, url

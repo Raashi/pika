@@ -1,1 +1,1 @@
-from .base import pika_post
+from .client import PikaApiClient
