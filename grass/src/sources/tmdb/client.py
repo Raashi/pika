@@ -1,3 +1,6 @@
+import time
+import datetime
+
 from utils import get_environ_variable, BaseApiClient
 
 
@@ -11,6 +14,9 @@ class TMDBApiClient(BaseApiClient):
     }
     api_key = get_environ_variable('PIKA_TMDB_API_KEY')
 
+    response_interval = 1
+    last_response_time = None
+
     def handle_error(self, response, url_name, url_args, kwargs):
         if response.status_code == 404 and url_name == 'movie':
             return None
@@ -22,4 +28,12 @@ class TMDBApiClient(BaseApiClient):
             kwargs['params'] = {}
         kwargs['params'].update(api_key=self.api_key)
 
-        return super().process_request(method, url, url_name, data, url_args, kwargs)
+        # balancing requests
+        if self.last_response_time is not None:
+            sleep_time = (datetime.datetime.now() - self.last_response_time).total_seconds()
+            time.sleep(sleep_time)
+
+        response = super().process_request(method, url, url_name, data, url_args, kwargs)
+        TMDBApiClient.last_response_time = datetime.datetime.now()
+
+        return response
