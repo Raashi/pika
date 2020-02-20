@@ -43,7 +43,6 @@ class Participation(pika_models.Model):
 
     character = models.CharField(_('Character'), max_length=64, blank=True, null=True)
     rus_character = models.CharField(_('Character in russian'), max_length=64, blank=True, null=True)
-    character_gender = pika_models.GenderField()
 
     class Meta:
         abstract = True

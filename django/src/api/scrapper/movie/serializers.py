@@ -37,7 +37,7 @@ class MovieParticipantSerializer(BaseUploadSerializer):
 
     class Meta:
         model = MovieParticipant
-        fields = ['movie', 'tmdb_credit_id', 'person', 'job', 'character', 'rus_character', 'character_gender']
+        fields = ['movie', 'tmdb_credit_id', 'person', 'job', 'character', 'rus_character']
         lookup_fields = ['movie', 'person']
 
 

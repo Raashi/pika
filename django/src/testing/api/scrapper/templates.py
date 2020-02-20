@@ -149,6 +149,5 @@ participant = {
     'person': 1,
     'job': 'job',
     'character': 'character',
-    'rus_character': 'rus character',
-    'character_gender': 2
+    'rus_character': 'rus character'
 }
