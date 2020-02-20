@@ -69,7 +69,7 @@ class UploadMovieRelatedTestCase(ScrapperBaseTestCase, CreateBasesMixin):
     required_fields = {
         'releases': {'type', 'country', 'date', 'movie'},
         'videos': {'tmdb_id', 'movie'},
-        'participants': {'person', 'movie', 'tmdb_cast_id'},
+        'participants': {'person', 'movie', 'tmdb_credit_id'},
         'reviews': {'tmdb_id', 'movie'}
     }
 

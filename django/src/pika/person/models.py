@@ -36,7 +36,7 @@ class Person(pika_models.Model):
 
 
 class Participation(pika_models.Model):
-    tmdb_cast_id = models.CharField(_('TMDB cast ID'), max_length=32)
+    tmdb_credit_id = models.CharField(_('TMDB credit ID'), max_length=32)
     person = models.ForeignKey(to=Person, on_delete=models.CASCADE, related_name='participants',
                                verbose_name=_('Person'))
     job = models.ForeignKey(to=Job, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_('Job'))

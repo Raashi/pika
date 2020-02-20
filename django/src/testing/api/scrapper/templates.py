@@ -145,7 +145,7 @@ release = {
 
 participant = {
     'movie': 1,
-    'tmdb_cast_id': '12345',
+    'tmdb_credit_id': '12345',
     'person': 1,
     'job': 'job',
     'character': 'character',
