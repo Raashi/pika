@@ -10,8 +10,6 @@ class MoviesUploadView(BaseScrapperUploadView):
 class MoviesRelationsUploadView(BaseScrapperUploadView):
     compositions = [
         ('releases', MovieReleaseDateSerializer),
-        ('posters', MoviePosterSerializer),
-        ('backdrops', MovieBackdropSerializer),
         ('videos', MovieVideoSerializer),
         ('participants', MovieParticipantSerializer),
         ('reviews', MovieReviewSerializer),

@@ -47,22 +47,6 @@ collection = {
     'rus_overview': 'rus overview'
 }
 
-image = {
-    'path': 'path.png',
-    'aspect_ratio': '4.38',
-    'width': 20,
-    'height': 20,
-    'vote_average': 1.23,
-    'vote_count': 12
-}
-
-
-def get_image_template(**kwargs):
-    data = deepcopy(image)
-    data.update(kwargs)
-    return data
-
-
 video = {
     'tmdb_id': 1,
     'size': 360,
@@ -159,12 +143,12 @@ release = {
     'country': 'RU'
 }
 
-
 participant = {
     'movie': 1,
+    'tmdb_cast_id': '12345',
     'person': 1,
     'job': 'job',
     'character': 'character',
     'rus_character': 'rus character',
-    'gender': 2
+    'character_gender': 2
 }

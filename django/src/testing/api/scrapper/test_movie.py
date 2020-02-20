@@ -68,17 +68,13 @@ class UploadMovieRelatedTestCase(ScrapperBaseTestCase, CreateBasesMixin):
     url = reverse('scrapper:movies-relations')
     required_fields = {
         'releases': {'type', 'country', 'date', 'movie'},
-        'posters': {'path', 'movie'},
-        'backdrops': {'path', 'movie'},
         'videos': {'tmdb_id', 'movie'},
-        'participants': {'person', 'movie'},
+        'participants': {'person', 'movie', 'tmdb_cast_id'},
         'reviews': {'tmdb_id', 'movie'}
     }
 
     example = {
         'releases': [templates.get_template(templates.release)],
-        'posters': [templates.get_image_template(movie=1)],
-        'backdrops': [templates.get_image_template(movie=1)],
         'videos': [templates.get_video_template(movie=1)],
         'participants': [templates.get_template(templates.participant)],
         'reviews': [templates.get_template(templates.review, movie=1)]
@@ -108,11 +104,6 @@ class UploadMovieRelatedTestCase(ScrapperBaseTestCase, CreateBasesMixin):
         self.post(self.url, self.example, expected_status=204)
 
         self.assertEqual(self.movie.release_dates.count(), 1)
-        self.assertEqual(self.movie.posters.count(), 1)
-        self.assertEqual(self.movie.backdrops.count(), 1)
         self.assertEqual(self.movie.videos.count(), 1)
         self.assertEqual(self.movie.participants.count(), 1)
         self.assertEqual(self.movie.reviews.count(), 1)
-
-
-

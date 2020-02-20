@@ -1,1 +1,1 @@
-from .views import PersonsUploadView, PersonsImagesUploadView
+from .views import PersonsUploadView

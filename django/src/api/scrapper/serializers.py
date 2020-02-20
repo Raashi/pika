@@ -14,7 +14,6 @@ from .validators import MultipleUniqueValidator, NotBlankUniqueValidator, VeryMu
 UserModel = get_user_model()
 
 
-TMDB_image_fields = ['path', 'aspect_ratio', 'width', 'height', 'vote_average', 'vote_count']
 TMDB_video_fields = ['tmdb_id', 'language', 'country', 'key', 'name', 'size', 'type']
 TMDB_review_fields = ['tmdb_id', 'author', 'content', 'url', 'language']
 

@@ -1,13 +1,13 @@
 from rest_framework.relations import SlugRelatedField
 
-from api.scrapper.serializers import BaseUploadSerializer, TMDB_image_fields, TMDB_video_fields, TMDB_review_fields
+from api.scrapper.serializers import BaseUploadSerializer, TMDB_video_fields, TMDB_review_fields
 from pika.base.models import Job
 
-from pika.movie.models import Movie, MovieReleaseDate, MoviePoster, MovieBackdrop, MovieVideo, \
+from pika.movie.models import Movie, MovieReleaseDate, MovieVideo, \
     MovieReview, MovieParticipant
 
 
-__all__ = ['MovieReleaseDateSerializer', 'MoviePosterSerializer', 'MovieBackdropSerializer', 'MovieVideoSerializer',
+__all__ = ['MovieReleaseDateSerializer', 'MovieVideoSerializer',
            'MovieReviewSerializer', 'MovieParticipantSerializer', 'MovieSerializer']
 
 
@@ -16,20 +16,6 @@ class MovieReleaseDateSerializer(BaseUploadSerializer):
         model = MovieReleaseDate
         fields = ['movie', 'type', 'date', 'country']
         lookup_fields = ['type', 'country']
-
-
-class MoviePosterSerializer(BaseUploadSerializer):
-    class Meta:
-        model = MoviePoster
-        fields = ['movie'] + TMDB_image_fields
-        lookup_fields = ['path']
-
-
-class MovieBackdropSerializer(BaseUploadSerializer):
-    class Meta:
-        model = MovieBackdrop
-        fields = ['movie'] + TMDB_image_fields
-        lookup_fields = ['path']
 
 
 class MovieVideoSerializer(BaseUploadSerializer):
@@ -51,7 +37,7 @@ class MovieParticipantSerializer(BaseUploadSerializer):
 
     class Meta:
         model = MovieParticipant
-        fields = ['movie', 'person', 'job', 'character', 'rus_character', 'gender']
+        fields = ['movie', 'tmdb_cast_id', 'person', 'job', 'character', 'rus_character', 'character_gender']
         lookup_fields = ['movie', 'person']
 
 

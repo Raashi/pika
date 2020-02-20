@@ -1,12 +1,5 @@
-from api.scrapper.serializers import BaseUploadSerializer, TMDB_image_fields
-from pika.person.models import PersonTMDBImage, Person
-
-
-class PersonImageUploadSerializer(BaseUploadSerializer):
-    class Meta:
-        model = PersonTMDBImage
-        fields = ['person'] + TMDB_image_fields
-        lookup_fields = ['path']
+from api.scrapper.serializers import BaseUploadSerializer
+from pika.person.models import Person
 
 
 class PersonUploadSerializer(BaseUploadSerializer):

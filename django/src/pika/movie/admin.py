@@ -1,15 +1,7 @@
 from django.contrib import admin
 
-from .models import Collection, Movie, MovieBackdrop, MoviePoster, MovieReleaseDate, MovieVideo, MovieParticipant, \
+from .models import Collection, Movie, MovieReleaseDate, MovieVideo, MovieParticipant, \
     MovieReview
-
-
-class MovieBackdropAdmin(admin.TabularInline):
-    model = MovieBackdrop
-
-
-class MoviePosterAdmin(admin.TabularInline):
-    model = MoviePoster
 
 
 class MovieVideoAdmin(admin.TabularInline):
@@ -29,8 +21,7 @@ class MovieParticipationAdmin(admin.StackedInline):
 
 
 class MovieAdmin(admin.ModelAdmin):
-    inlines = [MovieBackdropAdmin, MoviePosterAdmin, MovieReleaseDateAdmin, MovieVideoAdmin, MovieReviewAdmin,
-               MovieParticipationAdmin]
+    inlines = [MovieReleaseDateAdmin, MovieVideoAdmin, MovieReviewAdmin, MovieParticipationAdmin]
 
 
 admin.site.register(Collection)

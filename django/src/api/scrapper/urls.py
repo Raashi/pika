@@ -13,7 +13,6 @@ urlpatterns = [
     path('jobs/', scrapper.base.JobsUploadView.as_view(), name='jobs'),
     path('bases/', scrapper.base.BasesUploadView.as_view(), name='bases'),
     path('persons/', scrapper.person.PersonsUploadView.as_view(), name='persons'),
-    path('persons/images', scrapper.person.PersonsImagesUploadView.as_view(), name='persons-images'),
     path('movies/', scrapper.movie.MoviesUploadView.as_view(), name='movies'),
     path('movies/relations/', scrapper.movie.MoviesRelationsUploadView.as_view(), name='movies-relations')
 ]

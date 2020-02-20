@@ -62,7 +62,9 @@ class Movie(pika_models.Model):
 
     # images
     poster = pika_models.PosterImageField()
+    rus_poster = pika_models.PosterImageField(verbose_name=_('Russian poster'))
     backdrop = pika_models.BackdropImageField()
+    rus_backdrop = pika_models.BackdropImageField(verbose_name=_('Russian backdrop'))
 
     class Meta:
         db_table = 'movie'
@@ -91,24 +93,6 @@ class MovieReleaseDate(pika_models.Model):
         db_table = 'movie_release'
         verbose_name = _('Movie release')
         verbose_name_plural = _('Movie releases')
-
-
-class MoviePoster(pika_models.TMDBImage):
-    movie = models.ForeignKey(to=Movie, on_delete=models.CASCADE, related_name='posters')
-
-    class Meta:
-        db_table = 'movie_poster'
-        verbose_name = _('Movie poster')
-        verbose_name_plural = _('Movie posters')
-
-
-class MovieBackdrop(pika_models.TMDBImage):
-    movie = models.ForeignKey(to=Movie, on_delete=models.CASCADE, related_name='backdrops')
-
-    class Meta:
-        db_table = 'movie_backdrop'
-        verbose_name = _('Movie backdrop')
-        verbose_name_plural = _('Movie backdrops')
 
 
 class MovieVideo(pika_models.TMDBVideo):

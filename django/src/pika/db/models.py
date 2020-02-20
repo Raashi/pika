@@ -37,20 +37,6 @@ class Country(Model):
         verbose_name_plural = _('Countries')
 
 
-class TMDBImage(Model):
-    path = models.CharField(_('Path'), max_length=32, unique=True, db_index=True)
-
-    aspect_ratio = models.DecimalField(_('Aspect ratio'), max_digits=5, decimal_places=2, blank=True, null=True)
-    width = models.IntegerField(_('Width'), default=-1)
-    height = models.IntegerField(_('Height'), default=-1)
-
-    vote_average = models.DecimalField(_('Vote average'), max_digits=4, decimal_places=2, blank=True, null=True)
-    vote_count = models.IntegerField(_('Vote count'), default=0)
-
-    class Meta:
-        abstract = True
-
-
 VIDEO_TYPE_CHOICES = [
     (0, 'Other'),
     (1, 'Trailer'),

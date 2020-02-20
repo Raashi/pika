@@ -35,24 +35,15 @@ class Person(pika_models.Model):
         verbose_name_plural = _('Persons')
 
 
-class PersonTMDBImage(pika_models.TMDBImage):
-    person = models.ForeignKey(to=Person, on_delete=models.CASCADE, related_name='images',
-                               verbose_name=_('Person'))
-
-    class Meta:
-        db_table = 'person_image'
-        verbose_name = _('Person image')
-        verbose_name_plural = _('Person images')
-
-
 class Participation(pika_models.Model):
+    tmdb_cast_id = models.CharField(_('TMDB cast ID'), max_length=32)
     person = models.ForeignKey(to=Person, on_delete=models.CASCADE, related_name='participants',
                                verbose_name=_('Person'))
     job = models.ForeignKey(to=Job, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_('Job'))
 
     character = models.CharField(_('Character'), max_length=64, blank=True, null=True)
     rus_character = models.CharField(_('Character in russian'), max_length=64, blank=True, null=True)
-    gender = pika_models.GenderField()
+    character_gender = pika_models.GenderField()
 
     class Meta:
         abstract = True
