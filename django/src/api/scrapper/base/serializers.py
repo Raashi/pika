@@ -47,4 +47,4 @@ class GenreUploadSerializer(BaseUploadSerializer):
 class CollectionSerializer(BaseUploadSerializer):
     class Meta:
         model = Collection
-        fields = ['id', 'name', 'rus_name', 'poster', 'backdrop', 'overview', 'rus_overview']
+        fields = ['id', 'name', 'rus_name', 'poster', 'backdrop']

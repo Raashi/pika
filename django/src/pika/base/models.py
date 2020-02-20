@@ -106,9 +106,6 @@ class Collection(pika_models.Model):
     poster = pika_models.PosterImageField()
     backdrop = pika_models.BackdropImageField()
 
-    overview = models.CharField(_('Overview'), max_length=256, blank=True, null=True)
-    rus_overview = models.CharField(_('Overview in russian'), max_length=256, blank=True, null=True)
-
     class Meta:
         db_table = 'collection'
         verbose_name = _('Collection')
