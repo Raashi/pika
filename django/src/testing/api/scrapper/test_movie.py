@@ -21,6 +21,21 @@ class CreateBasesMixin:
         cls.russian = Language.objects.create(id='ru', name='russian')
 
 
+class CreateMovieMixin(CreateBasesMixin):
+    @classmethod
+    def create_bases(cls):
+        super().create_bases()
+
+        cls.person = Person.objects.create(**templates.person)
+        cls.job = Job.objects.create(**templates.job)
+
+        movie_data = templates.get_template(templates.movie)
+        for field in ['genres', 'production_companies', 'keywords', 'production_countries', 'spoken_languages']:
+            movie_data.pop(field)
+        movie_data['original_language'] = getattr(cls, 'russian')
+        cls.movie = Movie.objects.create(**movie_data)
+
+
 class MovieUploadTestCase(ScrapperBaseTestCase, CreateBasesMixin):
     url = reverse('scrapper:movies')
     example = {'items': [deepcopy(templates.movie)]}
@@ -64,7 +79,7 @@ class MovieUploadTestCase(ScrapperBaseTestCase, CreateBasesMixin):
         self.assertEqual(Movie.objects.count(), 1)
 
 
-class UploadMovieRelatedTestCase(ScrapperBaseTestCase, CreateBasesMixin):
+class UploadMovieRelatedTestCase(ScrapperBaseTestCase, CreateMovieMixin):
     url = reverse('scrapper:movies-relations')
     required_fields = {
         'releases': {'type', 'country', 'date', 'movie'},
@@ -84,15 +99,6 @@ class UploadMovieRelatedTestCase(ScrapperBaseTestCase, CreateBasesMixin):
     def setUpTestData(cls):
         cls.create_bases()
 
-        cls.person = Person.objects.create(**templates.person)
-        cls.job = Job.objects.create(**templates.job)
-
-        movie_data = templates.get_template(templates.movie)
-        for field in ['genres', 'production_companies', 'keywords', 'production_countries', 'spoken_languages']:
-            movie_data.pop(field)
-        movie_data['original_language'] = getattr(cls, 'russian')
-        cls.movie = Movie.objects.create(**movie_data)
-
         super().setUpTestData()
 
     def test_required(self):
@@ -107,3 +113,22 @@ class UploadMovieRelatedTestCase(ScrapperBaseTestCase, CreateBasesMixin):
         self.assertEqual(self.movie.videos.count(), 1)
         self.assertEqual(self.movie.participants.count(), 1)
         self.assertEqual(self.movie.reviews.count(), 1)
+
+
+class MovieNotExistTestCase(ScrapperBaseTestCase, CreateMovieMixin):
+    url = reverse('scrapper:movies-not-exist')
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.create_bases()
+
+        super().setUpTestData()
+
+    def _test(self, data, response):
+        self.assertEqual(self.post(self.url, {'items': data}).json()['items'], response)
+
+    def test(self):
+        self._test([], [])
+        self._test([self.movie.id], [])
+        self._test([self.movie.id, 'a'], ['a'])
+        self._test([203333, self.movie.id, 'a'], [203333, 'a'])

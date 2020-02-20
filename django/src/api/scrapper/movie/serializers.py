@@ -7,8 +7,8 @@ from pika.movie.models import Movie, MovieReleaseDate, MovieVideo, \
     MovieReview, MovieParticipant
 
 
-__all__ = ['MovieReleaseDateSerializer', 'MovieVideoSerializer',
-           'MovieReviewSerializer', 'MovieParticipantSerializer', 'MovieSerializer']
+__all__ = ['MovieReleaseDateSerializer', 'MovieVideoSerializer', 'MovieReviewSerializer', 'MovieParticipantSerializer',
+           'MovieSerializer', 'MovieExistsSerializer']
 
 
 class MovieReleaseDateSerializer(BaseUploadSerializer):
@@ -38,7 +38,7 @@ class MovieParticipantSerializer(BaseUploadSerializer):
     class Meta:
         model = MovieParticipant
         fields = ['movie', 'tmdb_credit_id', 'person', 'job', 'character', 'rus_character']
-        lookup_fields = ['movie', 'person']
+        lookup_fields = ['tmdb_credit_id']
 
 
 class MovieSerializer(BaseUploadSerializer):
@@ -53,3 +53,9 @@ class MovieSerializer(BaseUploadSerializer):
             # m2m
             'genres', 'production_companies', 'keywords', 'production_countries', 'spoken_languages'
         ]
+
+
+class MovieExistsSerializer(BaseUploadSerializer):
+    class Meta:
+        model = Movie
+        fields = ['id']

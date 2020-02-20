@@ -14,5 +14,6 @@ urlpatterns = [
     path('bases', scrapper.base.BasesUploadView.as_view(), name='bases'),
     path('persons', scrapper.person.PersonsUploadView.as_view(), name='persons'),
     path('movies', scrapper.movie.MoviesUploadView.as_view(), name='movies'),
-    path('movies/relations', scrapper.movie.MoviesRelationsUploadView.as_view(), name='movies-relations')
+    path('movies/relations', scrapper.movie.MoviesRelationsUploadView.as_view(), name='movies-relations'),
+    path('movies/not_exist', scrapper.movie.MovieNotExistView.as_view(), name='movies-not-exist'),
 ]
