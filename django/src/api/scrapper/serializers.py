@@ -9,7 +9,7 @@ from rest_framework.serializers import ModelSerializer, ListSerializer, HiddenFi
 from rest_framework.fields import empty
 from rest_framework.validators import UniqueValidator
 
-from .validators import MultipleUniqueValidator, NotBlankUniqueValidator, VeryMultipleUniqueValidator
+from .validators import MultipleUniqueValidator, NotBlankUniqueValidator, MultipleUniqueByLookupValidator
 
 UserModel = get_user_model()
 
@@ -80,7 +80,7 @@ class BaseListSerializer(ListSerializer):
 
         self.instances = []
         self.validators.append(MultipleUniqueValidator())
-        self.validators.append(VeryMultipleUniqueValidator())
+        self.validators.append(MultipleUniqueByLookupValidator())
         self.lookup_fields = self.child.lookup_fields
         self.save_count = 0
 
@@ -106,7 +106,7 @@ class BaseListSerializer(ListSerializer):
                 for field, field_obj in self.child.fields.items():
                     if hasattr(field_obj, 'unique_validator'):
                         self.child.instance = instance
-                        field_obj.unique_validator(validated[field], field_obj)
+                        field_obj.unique_validator(validated.get(field, None), field_obj)
 
                 self.instances.append(instance)
             except ValidationError as exc:

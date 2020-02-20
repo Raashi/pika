@@ -60,10 +60,11 @@ class CountriesUploadBaseTestCase(ScrapperBaseTestCase):
     def test_unique(self):
         self.post(self.url, self.example, expected_status=204)
 
+        # name is not unique no more
         self.example['items'][0]['id'] = 'US'
-        self.post(self.url, self.example, expected_status=400)
+        self.post(self.url, self.example, expected_status=204)
 
-        self.assertEqual(Country.objects.count(), 1)
+        self.assertEqual(Country.objects.count(), 2)
 
         # return class variable state back
         self.example['items'][0]['id'] = 'RU'
@@ -168,7 +169,10 @@ class TestBasesUploading(ScrapperBaseTestCase):
         'collections': [get_template(collection)]
     }
 
-    unique_error = {'non_field_errors': ['Multiple equal values provided for unique field id']}
+    unique_error = {'non_field_errors': [
+        'Multiple equal values provided for unique field id',
+        'Multiple equal by lookup fields values provided'
+    ]}
 
     @classmethod
     def setUpTestData(cls):

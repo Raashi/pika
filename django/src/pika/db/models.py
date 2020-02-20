@@ -22,19 +22,27 @@ class Language(Model):
         db_table = 'lang'
         verbose_name = _('Language')
         verbose_name_plural = _('Languages')
+        ordering = ('name',)
+
+    def __str__(self):
+        return f'{self.name} ({self.id})'
 
 
 class Country(Model):
     ISO_3166_1_LENGTH = 2
 
     id = ISOField(_('ISO country code'), max_length=ISO_3166_1_LENGTH)
-    name = models.CharField(_('Country name'), max_length=128, unique=True, db_index=True)
+    name = models.CharField(_('Country name'), max_length=128, db_index=True)
     rus_name = models.CharField(_('Country name in russian'), max_length=128, blank=True, null=True)
 
     class Meta:
         db_table = 'country'
         verbose_name = _('Country')
         verbose_name_plural = _('Countries')
+        ordering = ('name',)
+
+    def __str__(self):
+        return f'{self.name} ({self.id})'
 
 
 VIDEO_TYPE_CHOICES = [

@@ -52,7 +52,7 @@ class ScrapperAccessToken(CacheModel):
     @classmethod
     def ttl(cls):
         # TODO: move to django.settings
-        return 900
+        return 9000
 
     @classmethod
     def length(cls):
