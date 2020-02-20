@@ -1,3 +1,5 @@
+import itertools
+
 MOVIE_STATUS_MAPPING = {
     'Rumored': 1,
     'Planned': 2,
@@ -90,6 +92,7 @@ def get_movie(tmdb_client, movie_id):
         'production_countries': [country['iso_3166_1'] for country in movie_eng['production_countries']],
         'spoken_languages': [language['iso_639_1'] for language in movie_eng['spoken_languages']],
         'keywords': [keyword['id'] for keyword in keywords],
+        'collection': None if collection is None else collection['id'],
 
         'release_date': movie_eng['release_date'],
         'status': MOVIE_STATUS_MAPPING[movie_eng['status']],
@@ -121,9 +124,61 @@ def get_movie(tmdb_client, movie_id):
         'movie': movie,
         'releases': releases,
         'videos': videos,
-        'reviews': [],
-        'posters': [],
-        'backdrops': [],
-        'persons': [],
-        'participants': []
     }
+
+
+def send_movies(pika_client, tmdb_client, movie_ids):
+    movies = [get_movie(tmdb_client, movie_id) for movie_id in movie_ids]
+    movies = list(filter(lambda obj: obj is not None, movies))
+    if not len(movies):
+        return
+
+    genre_ids = set()
+    genres = []
+    keyword_ids = set()
+    keywords = []
+    company_ids = set()
+    companies = []
+    collection_ids = set()
+    collections = []
+    for movie in movies:
+        for genre in movie['genres']:
+            if genre['id'] not in genre_ids:
+                genre_ids.add(genre['id'])
+                genres.append(genre)
+
+        for keyword in movie['keywords']:
+            if keyword['id'] not in keyword_ids:
+                keyword_ids.add(keyword['id'])
+                keywords.append(keyword)
+
+        for company in movie['companies']:
+            if company['id'] not in company_ids:
+                company_ids.add(company['id'])
+                companies.append(company)
+
+        collection = movie['collection']
+        if collection is not None and collection['id'] not in collection_ids:
+            collection_ids.add(collection['id'])
+            collections.append(collection)
+
+    # bases
+    bases = {
+        'genres': genres,
+        'keywords': keywords,
+        'companies': companies,
+        'collections': collections,
+    }
+    pika_client.post('bases', bases)
+
+    # movie
+    pika_client.post('movies', {'items': [movie['movie'] for movie in movies]})
+
+    # relations
+    relations = {
+        'releases': list([release for movie in movies for release in movie['releases']]),
+        'videos': list([video for movie in movies for video in movie['videos']]),
+        'participants': [],
+        'reviews': []
+    }
+    pika_client.post('movie-relations', relations)

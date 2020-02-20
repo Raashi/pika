@@ -11,14 +11,14 @@ class PikaApiClient(BaseApiClient):
 
     urls = {
         'login': '/api/scrapper/login',
-        'countries': '/api/scrapper/countries/',
-        'languages': '/api/scrapper/languages/',
-        'jobs': '/api/scrapper/jobs/',
-        'bases': '/api/scrapper/bases/',
-        'persons': '/api/scrapper/persons/',
-        'persons-images': '/api/scrapper/persons/images/',
-        'movies': '/api/scrapper/movies/',
-        'movies-relations': 'api/scrapper/movies/relations/'
+        'countries': '/api/scrapper/countries',
+        'languages': '/api/scrapper/languages',
+        'jobs': '/api/scrapper/jobs',
+        'bases': '/api/scrapper/bases',
+        'persons': '/api/scrapper/persons',
+        'movies': '/api/scrapper/movies',
+        'movies-relations': 'api/scrapper/movies/relations',
+        'movies-not-exist': 'api/scrapper/movies/not_exist',
     }
 
     def __init__(self):
@@ -28,17 +28,15 @@ class PikaApiClient(BaseApiClient):
         response = self.post('login', self.credentials, process_request=False)
         self.token = response['Bearer']
 
-    def handle_error(self, response, url_name, url_args, kwargs):
-        if response.status_code == 401:
-            # if authentication failed - token expired
-            self.login()
-            return
-        return super().handle_error(response, url_name, url_args, kwargs)
-
     def process_request(self, method, url, url_name, data, url_args, kwargs):
         if self.token is None:
-            # get token if no token provided
             self.login()
 
-        kwargs.update(**{self.authorization_header: self.token})
+        if url_name != 'login':
+            kwargs.update(**{self.authorization_header: self.token})
+
+        response = super().process_request(method, url, url_name, data, url_args, kwargs)
+        if response.status_code == 403:
+            self.login()
+
         return super().process_request(method, url, url_name, data, url_args, kwargs)

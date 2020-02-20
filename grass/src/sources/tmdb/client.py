@@ -11,6 +11,7 @@ class TMDBApiClient(BaseApiClient):
         'languages': '/configuration/languages',
         'jobs': '/configuration/jobs',
         'movie': '/movie/{}',
+        'person': '/person/{}',
     }
     api_key = get_environ_variable('PIKA_TMDB_API_KEY')
 
@@ -18,7 +19,7 @@ class TMDBApiClient(BaseApiClient):
     last_response_time = None
 
     def handle_error(self, response, url_name, url_args, kwargs):
-        if response.status_code == 404 and url_name == 'movie':
+        if response.status_code == 404 and url_name in ['movie', 'person']:
             return None
         return super().handle_error(response, url_name, url_args, kwargs)
 
