@@ -1,3 +1,4 @@
+import posixpath
 import time
 import datetime
 
@@ -11,12 +12,29 @@ class TMDBApiClient(BaseApiClient):
         'languages': '/configuration/languages',
         'jobs': '/configuration/jobs',
         'movie': '/movie/{}',
+        'movie-changes': '/movie/changes',
         'person': '/person/{}',
+        'person-changes': '/person/changes'
     }
+
+    files_base_url = 'http://files.tmdb.org/p/exports'
+    files_urls = {
+        'files-movies': 'movie_ids_{}.json.gz',
+        'files-people': 'person_ids_{}.json.gz',
+        'files-collections': 'collection_ids_{}.json.gz',
+        'files-keywords': 'keyword_ids_{}.json.gz',
+        'files-companies': 'production_company_ids_{}.json.gz'
+    }
+
     api_key = get_environ_variable('PIKA_TMDB_API_KEY')
 
     response_interval = 1
     last_response_time = None
+
+    def create_url(self, url_name, url_args=None):
+        if url_name in self.files_urls:
+            return posixpath.join(self.files_base_url, self.files_urls[url_name]).format(url_args)
+        return super().create_url(url_name, url_args)
 
     def handle_error(self, response, url_name, url_args, kwargs):
         if response.status_code == 404 and url_name in ['movie', 'person']:

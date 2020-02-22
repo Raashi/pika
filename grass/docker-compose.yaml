@@ -1,22 +1,43 @@
 version: '2'
 
 services:
-    rabbit:
-        hostname: rabbitmq
-        image: rabbitmq:latest
-        environment:
-            - RABBITMQ_DEFAULT_USER=admin
-            - RABBITMQ_DEFAULT_PASS=admin
-            - RABBITMQ_DEFAULT_VHOST=grass
-        ports:
-            - "5672:5672"
+  db:
+    image: postgres
+    volumes:
+      - "grass_postgres_data:/var/lib/postgresql/data"
+    ports:
+      - "5431:5432"
+    environment:
+      - POSTGRES_USER=grass
+      - POSTGRES_PASSWORD=grass
+      - POSTGRES_DB=grass
+      - PGPASSWORD=grass
 
-    worker:
-        build:
-            context: .
-        volumes:
-            - ./src:/grass/src
-        links:
-            - rabbit
-        depends_on:
-            - rabbit
+  rabbit:
+    hostname: rabbitmq
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - RABBITMQ_DEFAULT_VHOST=grass
+    ports:
+      - "5672:5672"
+
+  worker:
+    build:
+      context: .
+    environment:
+      - PIKA_SCRAPPER_USERNAME=admin
+      - PIKA_SCRAPPER_PASSWORD=admin
+      - PIKA_TMDB_API_KEY=${PIKA_TMDB_API_KEY}
+      - GRASS_DB=postgres
+    volumes:
+      - ./src:/grass/src
+    links:
+      - rabbit
+    depends_on:
+      - rabbit
+      - db
+
+volumes:
+  grass_postgres_data:
