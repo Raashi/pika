@@ -1,5 +1,3 @@
-import itertools
-
 MOVIE_STATUS_MAPPING = {
     'Rumored': 1,
     'Planned': 2,
@@ -59,7 +57,9 @@ def get_movie(tmdb_client, movie_id):
                  for company_eng, company_rus in zip(companies_eng, companies_rus)]
 
     # keywords
-    keywords = [{'id': keyword['id', 'name': keyword['name']]} for keyword in movie_eng['keywords']['keywords']]
+    keywords = [{'id': keyword['id', 'name': keyword['name']]} for keyword in movie_eng['keywords']['keywords']
+                # TMDB has keyword with empty name (WTF)
+                if keyword['name']]
 
     movie = {
         'id': movie_eng['id'],

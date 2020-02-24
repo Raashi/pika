@@ -140,17 +140,18 @@ class JobUploadTestCase(ScrapperBaseTestCase):
         data = deepcopy(self.example)
         data['items'].append(get_template(job))
 
+        # two equals
         self.post(self.url, data, expected_status=400)
 
-        # change name - no error
+        # change name - no error - one more job (changed, Art)
         data['items'][1]['name'] = 'changed'
         self.post(self.url, data, expected_status=204)
 
-        # now change department
+        # now change department - one more job (changed, Visual Effects)
         data['items'][1]['department'] = 'Visual Effects'
         self.post(self.url, data, expected_status=204)
 
-        self.assertEqual(Job.objects.count(), 2)
+        self.assertEqual(Job.objects.count(), 3)
 
 
 class TestBasesUploading(ScrapperBaseTestCase):
@@ -170,7 +171,7 @@ class TestBasesUploading(ScrapperBaseTestCase):
     }
 
     unique_error = {'non_field_errors': [
-        'Multiple equal values provided for unique field id',
+        'Multiple equal values provided for unique field id with value 1',
         'Multiple equal by lookup fields values provided'
     ]}
 

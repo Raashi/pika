@@ -33,9 +33,9 @@ DEPARTMENT_MAX_LENGTH = 20
 
 
 class Job(pika_models.Model):
-    # name is unique, but we still have and id as AutoField
+    # plus id as AutoField
     department = models.CharField(_('Department name'), max_length=DEPARTMENT_MAX_LENGTH, choices=DEPARTMENT_CHOICES)
-    name = models.CharField(_('Job name'), max_length=64, unique=True, db_index=True)
+    name = models.CharField(_('Job name'), max_length=128)
     rus_name = models.CharField(_('Job name in russian'), max_length=64, blank=True, null=True)
 
     class Meta:
@@ -100,7 +100,7 @@ class Review(pika_models.Model):
 
 class Collection(pika_models.Model):
     id = pika_models.TMDBId()
-    name = models.CharField(_('Collection name'), max_length=64)
+    name = models.CharField(_('Collection name'), max_length=128)
     rus_name = models.CharField(_('Collection name in russian'), max_length=64, blank=True, null=True)
 
     poster = pika_models.PosterImageField()

@@ -3,10 +3,10 @@ from utils import get_environ_variable, BaseApiClient
 
 class PikaApiClient(BaseApiClient):
     base_url = get_environ_variable('PIKA_URL')
-    authorization_header = 'HTTP_AUTHORIZATION'
+    authorization_header = 'Authorization'
     credentials = {
-        'username': get_environ_variable('PIKA_SCRAPPER_USERNAME'),
-        'password': get_environ_variable('PIKA_SCRAPPER_PASSWORD')
+        'username': get_environ_variable('PIKA_USERNAME'),
+        'password': get_environ_variable('PIKA_PASSWORD')
     }
 
     urls = {
@@ -28,12 +28,17 @@ class PikaApiClient(BaseApiClient):
         response = self.post('login', self.credentials, process_request=False)
         self.token = response['Bearer']
 
+    def handle_error(self, response, url_name, url_args, kwargs):
+        if response.status_code == 400:
+            print(response.json())
+            print(url_name)
+        return super().handle_error(response, url_name, url_args, kwargs)
+
     def process_request(self, method, url, url_name, data, url_args, kwargs):
         if self.token is None:
             self.login()
 
-        if url_name != 'login':
-            kwargs.update(**{self.authorization_header: self.token})
+        kwargs['headers'].update(**{self.authorization_header: f'Bearer {self.token}'})
 
         response = super().process_request(method, url, url_name, data, url_args, kwargs)
         if response.status_code == 403:

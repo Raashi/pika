@@ -1,7 +1,5 @@
-from rest_framework.relations import SlugRelatedField
-
 from api.scrapper.serializers import BaseUploadSerializer, TMDB_video_fields, TMDB_review_fields
-from pika.base.models import Job
+from api.scrapper.base.serializers import JobField
 
 from pika.movie.models import Movie, MovieReleaseDate, MovieVideo, \
     MovieReview, MovieParticipant
@@ -33,7 +31,7 @@ class MovieReviewSerializer(BaseUploadSerializer):
 
 
 class MovieParticipantSerializer(BaseUploadSerializer):
-    job = SlugRelatedField(slug_field='name', queryset=Job.objects.all(), allow_null=True, required=False)
+    job = JobField(allow_null=True, required=False)
 
     class Meta:
         model = MovieParticipant

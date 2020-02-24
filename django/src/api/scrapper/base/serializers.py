@@ -1,9 +1,12 @@
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import DictField, CharField
+
 from api.scrapper.serializers import BaseUploadSerializer
 from pika.base.models import Keyword, Job, Company, Genre, Collection
 from pika.db.models import Language, Country
 
 __all__ = ['LanguageUploadSerializer', 'CountryUploadSerializer', 'KeywordUploadSerializer', 'JobUploadSerializer',
-           'CompanyUploadSerializer', 'GenreUploadSerializer', 'CollectionSerializer']
+           'CompanyUploadSerializer', 'GenreUploadSerializer', 'CollectionSerializer', 'JobField']
 
 
 class LanguageUploadSerializer(BaseUploadSerializer):
@@ -28,7 +31,26 @@ class JobUploadSerializer(BaseUploadSerializer):
     class Meta:
         model = Job
         fields = ['department', 'name', 'rus_name']
-        lookup_fields = ['name']
+        lookup_fields = ['name', 'department']
+
+
+class JobField(DictField):
+    child = CharField(allow_blank=False)
+
+    def to_internal_value(self, data):
+        data = super().to_internal_value(data)
+        return Job.objects.get(name=data['name'], department=data['department'])
+
+    @classmethod
+    def validate(cls, data):
+        errors = []
+        if 'name' not in data:
+            errors.append('name sub-field is required')
+        if 'department' not in data:
+            errors.append('department sub-field is required')
+        if errors:
+            raise ValidationError(errors)
+        return data
 
 
 class CompanyUploadSerializer(BaseUploadSerializer):

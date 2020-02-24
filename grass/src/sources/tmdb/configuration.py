@@ -22,7 +22,10 @@ def send_languages(pika_client, tmdb_client):
 
 def get_jobs(tmdb_client):
     jobs = tmdb_client.get('jobs')
-    jobs = [{'department': dep['department', 'name': job]} for dep in jobs for job in dep['jobs']]
+    # tmdb bug fix - there are two ADR Editor jobs in department Sound (WTF)
+    for dep in jobs:
+        dep['jobs'] = set(dep['jobs'])
+    jobs = [{'department': dep['department'], 'name': job} for dep in jobs for job in dep['jobs']]
     return jobs
 
 

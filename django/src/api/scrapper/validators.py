@@ -4,7 +4,7 @@ from rest_framework.validators import UniqueValidator
 
 
 class MultipleUniqueValidator:
-    message = 'Multiple equal values provided for unique field {}'
+    message = 'Multiple equal values provided for unique field {} with value {}'
     requires_context = True
 
     def __call__(self, arr, serializer):
@@ -19,12 +19,13 @@ class MultipleUniqueValidator:
                 if field_name not in attrs or attrs[field_name] is None:
                     continue
                 if attrs[field_name] in field_checks:
-                    raise ValidationError(self.message.format(field_name))
+                    msg = self.message.format(field_name, attrs[field_name])
+                    raise ValidationError(msg)
                 field_checks.add(attrs[field_name])
 
 
 class MultipleUniqueByLookupValidator:
-    message = 'Multiple equal by lookup fields values provided'
+    message = 'Multiple equal by lookup fields values provided with value {}'
     missing_message = 'Lookup fields must be required'
     requires_context = True
 
@@ -34,7 +35,7 @@ class MultipleUniqueByLookupValidator:
             self.enforce_required_fields(item, serializer.child)
             value = tuple(item[field] for field in serializer.lookup_fields)
             if value in checks:
-                raise ValidationError(self.message)
+                raise ValidationError(self.message.format(value))
             checks.add(value)
 
     def enforce_required_fields(self, attrs, serializer):

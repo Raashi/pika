@@ -147,7 +147,10 @@ participant = {
     'movie': 1,
     'tmdb_credit_id': '12345',
     'person': 1,
-    'job': 'job',
+    'job': {
+        'name': 'job',
+        'department': 'Art',
+    },
     'character': 'character',
     'rus_character': 'rus character'
 }

@@ -1,4 +1,3 @@
-import posixpath
 import time
 import datetime
 
@@ -26,14 +25,17 @@ class TMDBApiClient(BaseApiClient):
         'files-companies': 'production_company_ids_{}.json.gz'
     }
 
-    api_key = get_environ_variable('PIKA_TMDB_API_KEY')
+    api_key = get_environ_variable('TMDB_API_KEY')
 
     response_interval = 1
     last_response_time = None
 
+    files_date_format = '%m_%d_%Y'
+
     def create_url(self, url_name, url_args=None):
         if url_name in self.files_urls:
-            return posixpath.join(self.files_base_url, self.files_urls[url_name]).format(url_args)
+            assert len(url_args) == 1
+            return self.join_urls(self.files_base_url, self.files_urls[url_name]).format(*url_args)
         return super().create_url(url_name, url_args)
 
     def handle_error(self, response, url_name, url_args, kwargs):
@@ -56,3 +58,6 @@ class TMDBApiClient(BaseApiClient):
         TMDBApiClient.last_response_time = datetime.datetime.now()
 
         return response
+
+    def format_date(self, date):
+        return date.strftime(self.files_date_format)
