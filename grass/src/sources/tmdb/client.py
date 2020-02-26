@@ -51,10 +51,11 @@ class TMDBApiClient(BaseApiClient):
 
         # balancing requests
         if self.last_response_time is not None:
-            sleep_time = (datetime.datetime.now() - self.last_response_time).total_seconds()
-            time.sleep(sleep_time)
+            sleep_time = (datetime.datetime.now() - self.last_response_time).microseconds
+            time.sleep(max([0, 1 - sleep_time / 1000]))
 
         response = super().process_request(method, url, url_name, data, url_args, kwargs)
+        print(response.request.url)
         TMDBApiClient.last_response_time = datetime.datetime.now()
 
         return response

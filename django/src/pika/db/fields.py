@@ -21,7 +21,6 @@ class IMDBId(models.CharField):
         kwargs['max_length'] = self.IMDB_ID_LENGTH
         kwargs['null'] = True
         kwargs['blank'] = True
-        kwargs['unique'] = True
         kwargs['db_index'] = True
         super().__init__(verbose_name=verbose_name, **kwargs)
 

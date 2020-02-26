@@ -15,14 +15,9 @@ class Person(pika_models.Model):
     birthday = models.DateField(_('Birthday'), blank=True, null=True)
     deathday = models.DateField(_('Death day'), blank=True, null=True)
 
-    known_for_department = models.CharField(_('Known for department'), max_length=DEPARTMENT_MAX_LENGTH,
-                                            choices=DEPARTMENT_CHOICES, blank=True, null=True)
+    known_for_department = models.CharField(_('Known for department'), max_length=32, blank=True, null=True)
 
-    # TODO: limit this correctly
-    biography = models.CharField(_('Biography'), max_length=256, blank=True, null=True)
-    rus_biography = models.CharField(_('Russian biography'), max_length=256, blank=True, null=True)
-
-    popularity = models.DecimalField(_('Popularity'), decimal_places=2, max_digits=6, default='0.00')
+    popularity = models.DecimalField(_('Popularity'), decimal_places=3, max_digits=6, default='0.00')
 
     profile = pika_models.ProfileImageField()
     adult = models.BooleanField(_('Adult'), default=False)

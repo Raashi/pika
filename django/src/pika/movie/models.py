@@ -24,8 +24,8 @@ class Movie(pika_models.Model):
     title = models.CharField(_('Title'), max_length=256)
     rus_title = models.CharField(_('Title in russian'), max_length=256, blank=True, null=True)
 
-    overview = models.CharField(_('Overview'), max_length=256, blank=True, null=True)
-    rus_overview = models.CharField(_('Overview in russian'), max_length=256, blank=True, null=True)
+    overview = models.CharField(_('Overview'), max_length=2048, blank=True, null=True)
+    rus_overview = models.CharField(_('Overview in russian'), max_length=2048, blank=True, null=True)
 
     tagline = models.CharField(_('Movie tagline'), max_length=128, blank=True, null=True)
     rus_tagline = models.CharField(_('Movie tagline in russian'), max_length=128, blank=True, null=True)
@@ -35,7 +35,7 @@ class Movie(pika_models.Model):
 
     adult = models.BooleanField(_('Adult'), default=False)
     budget = models.IntegerField(_('Budget'), blank=True, null=True)
-    popularity = models.DecimalField(_('Popularity'), decimal_places=2, max_digits=6, blank=True, null=True)
+    popularity = models.DecimalField(_('Popularity'), decimal_places=3, max_digits=6, blank=True, null=True)
     runtime = models.IntegerField(_('Movie runtime'), blank=True, null=True)
     revenue = models.IntegerField(_('Movie revenue'), blank=True, null=True)
 
@@ -88,6 +88,7 @@ class MovieReleaseDate(pika_models.Model):
     date = models.DateTimeField(_('Release date'))
     country = models.ForeignKey(to=pika_models.Country, on_delete=models.CASCADE, related_name='releases',
                                 verbose_name=_('Release country'))
+    note = models.CharField(_('Release note'), blank=True, null=True, max_length=64)
 
     class Meta:
         db_table = 'movie_release'

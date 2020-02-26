@@ -1,13 +1,16 @@
+import datetime
+
 from .movie import send_movies
 from .person import send_persons
 
 
 def get_changes_from_response(response):
-    return [obj['id'] for obj in response['results']]
+    return [obj['id'] for obj in response['results']][:10]
 
 
 def get_changes(tmdb_client, start_date, end_date, url_name):
-    params = {'start_date': start_date.isoformat(), 'end_date': end_date.isoformat()}
+    end_date = end_date + datetime.timedelta(days=1)
+    params = {'start_date': start_date.isoformat(), 'end_date': end_date.isoformat(), 'page': '1'}
 
     response = tmdb_client.get(url_name, params=params)
     changes = get_changes_from_response(response)

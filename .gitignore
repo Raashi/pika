@@ -7,3 +7,5 @@
 
 django/src/settings/local.py
 
+.DS_Store
+

@@ -32,6 +32,7 @@ class PikaApiClient(BaseApiClient):
         if response.status_code == 400:
             print(response.json())
             print(url_name)
+            print(response.request.body)
         return super().handle_error(response, url_name, url_args, kwargs)
 
     def process_request(self, method, url, url_name, data, url_args, kwargs):

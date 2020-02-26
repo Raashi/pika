@@ -12,8 +12,8 @@ __all__ = ['MovieReleaseDateSerializer', 'MovieVideoSerializer', 'MovieReviewSer
 class MovieReleaseDateSerializer(BaseUploadSerializer):
     class Meta:
         model = MovieReleaseDate
-        fields = ['movie', 'type', 'date', 'country']
-        lookup_fields = ['type', 'country']
+        fields = ['movie', 'type', 'date', 'country', 'note']
+        lookup_fields = ['type', 'country', 'movie', 'note']
 
 
 class MovieVideoSerializer(BaseUploadSerializer):

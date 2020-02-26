@@ -1,7 +1,7 @@
 from .movie import send_movies
 
 
-MINIMUM_PERSON_POPULARITY = 0.1
+MINIMUM_PERSON_POPULARITY = 0.61
 
 
 def get_person(tmdb_client, person_id):
@@ -18,9 +18,6 @@ def get_person(tmdb_client, person_id):
         'birthday': person_eng['birthday'],
         'deathday': person_eng['deathday'],
         'known_for_department': person_eng['known_for_department'],
-        'biography': person_eng['biography'],
-        # TODO: decide it is worth it to make additional request just for biography
-        'rus_biography': '',
         'popularity': person_eng['popularity'],
         'profile': person_eng['profile_path'],
         'adult': person_eng['adult'],

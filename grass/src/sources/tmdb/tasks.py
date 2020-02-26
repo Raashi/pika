@@ -64,24 +64,23 @@ def startup():
     send_jobs(pika_client, tmdb_client)
 
     # send bases
-    print('sending bases')
-    collections_filename = download_today_file(tmdb_client, 'files-collections', 'collections.json')
-    collections = [obj for obj in read_file(collections_filename)]
-    for chunk in iter_by_chunks(collections):
-        pika_client.post('bases', {'genres': [], 'keywords': [], 'companies': [], 'collections': chunk})
-    print('sent collections')
+    # print('sending bases')
+    # collections_filename = download_today_file(tmdb_client, 'files-collections', 'collections.json')
+    # collections = [obj for obj in read_file(collections_filename)]
+    # for chunk in iter_by_chunks(collections):
+    #     pika_client.post('bases', {'genres': [], 'keywords': [], 'companies': [], 'collections': chunk})
+    # print('sent collections')
 
-    keywords_filename = download_today_file(tmdb_client, 'files-keywords', 'keywords.json')
-    keywords = [obj for obj in read_file(keywords_filename)
-                # TMDB has keyword with empty name (WTF)
-                if obj['name']]
-    print(keywords)
-    for chunk in iter_by_chunks(keywords):
-        pika_client.post('bases', {'genres': [], 'keywords': chunk, 'companies': [], 'collections': []})
-    print('sent keywords')
+    # keywords_filename = download_today_file(tmdb_client, 'files-keywords', 'keywords.json')
+    # keywords = [obj for obj in read_file(keywords_filename)
+    #             # TMDB has keyword with empty name (WTF)
+    #             if obj['name'].strip()]
+    # for chunk in iter_by_chunks(keywords):
+    #     pika_client.post('bases', {'genres': [], 'keywords': chunk, 'companies': [], 'collections': []})
+    # print('sent keywords')
 
-    companies_filename = download_today_file(tmdb_client, 'files-companies', 'companies.json')
-    companies = [obj for obj in read_file(companies_filename)]
-    for chunk in iter_by_chunks(companies):
-        pika_client.post('bases', {'genres': [], 'keywords': [], 'companies': chunk, 'collections': []})
-    print('sent companies')
+    # companies_filename = download_today_file(tmdb_client, 'files-companies', 'companies.json')
+    # companies = [obj for obj in read_file(companies_filename)]
+    # for chunk in iter_by_chunks(companies):
+    #     pika_client.post('bases', {'genres': [], 'keywords': [], 'companies': chunk, 'collections': []})
+    # print('sent companies')

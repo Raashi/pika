@@ -1,8 +1,8 @@
 MOVIE_STATUS_MAPPING = {
     'Rumored': 1,
     'Planned': 2,
-    'In production': 3,
-    'Post production': 4,
+    'In Production': 3,
+    'Post Production': 4,
     'Released': 5,
     'Cancelled': 6,
 }
@@ -46,7 +46,7 @@ def get_movie(tmdb_client, movie_id):
     # genres
     genres_eng = movie_eng['genres']
     genres_rus = movie_rus['genres']
-    genres = [{'id': genre_eng['id'], 'name': genres_eng['name'], 'rus_name': genres_rus['name']}
+    genres = [{'id': genre_eng['id'], 'name': genre_eng['name'], 'rus_name': genre_rus['name']}
               for genre_eng, genre_rus in zip(genres_eng, genres_rus)]
 
     # companies
@@ -57,7 +57,7 @@ def get_movie(tmdb_client, movie_id):
                  for company_eng, company_rus in zip(companies_eng, companies_rus)]
 
     # keywords
-    keywords = [{'id': keyword['id', 'name': keyword['name']]} for keyword in movie_eng['keywords']['keywords']
+    keywords = [{'id': keyword['id'], 'name': keyword['name']} for keyword in movie_eng['keywords']['keywords']
                 # TMDB has keyword with empty name (WTF)
                 if keyword['name']]
 
@@ -106,7 +106,8 @@ def get_movie(tmdb_client, movie_id):
 
     releases = movie_eng['release_dates']['results']
     releases = [
-        {'movie': movie['id'], 'type': release['type'], 'date': release['release_date'], 'country': country}
+        {'movie': movie['id'], 'type': release['type'], 'date': release['release_date'],
+         'country': country['iso_3166_1'], 'note': release.get('note', '')}
         for country in releases if country['iso_3166_1'] in ['RU', 'US'] for release in country['release_dates']
     ]
 
@@ -181,4 +182,4 @@ def send_movies(pika_client, tmdb_client, movie_ids):
         'participants': [],
         'reviews': []
     }
-    pika_client.post('movie-relations', relations)
+    pika_client.post('movies-relations', relations)
