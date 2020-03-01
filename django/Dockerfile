@@ -7,4 +7,10 @@ WORKDIR /code
 
 COPY ./requirements /code/requirements
 RUN pip install -r /code/requirements/base.txt
-COPY ./src /code/
+COPY ./src /code/src/
+COPY ./wait-for-it.sh /code/wait-for-it.sh
+COPY ./start.sh /code/start.sh
+
+WORKDIR /code/src
+
+ENTRYPOINT ["bash", "../start.sh"]

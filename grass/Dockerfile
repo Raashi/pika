@@ -9,10 +9,11 @@ WORKDIR /grass
 
 COPY ./requirements ./requirements
 RUN pip install --disable-pip-version-check --no-cache-dir -r ./requirements/base.txt
+RUN pip install --disable-pip-version-check --no-cache-dir -r ./requirements/dev.txt
 
-COPY ./src /grass/src
-COPY ./wait-for-it.sh /grass/wait-for-it.sh
-COPY ./start.sh /grass/start.sh
+COPY src /grass/src
+COPY wait-for-it.sh /grass/wait-for-it.sh
+COPY start.sh /grass/start.sh
 
 WORKDIR /grass/src
 

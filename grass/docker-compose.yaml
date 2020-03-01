@@ -1,18 +1,6 @@
 version: '2'
 
 services:
-  db:
-    image: postgres
-    volumes:
-      - "grass_postgres_data:/var/lib/postgresql/data"
-    ports:
-      - "5431:5432"
-    environment:
-      - POSTGRES_USER=grass
-      - POSTGRES_PASSWORD=grass
-      - POSTGRES_DB=grass
-      - PGPASSWORD=grass
-
   rabbit:
     hostname: rabbitmq
     image: rabbitmq:latest
@@ -37,7 +25,8 @@ services:
       - rabbit
     depends_on:
       - rabbit
-      - db
+    ports:
+    - "5555:5555"
 
 volumes:
   grass_postgres_data:
