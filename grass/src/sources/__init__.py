@@ -1,4 +1,4 @@
-from sources.tmdb.tasks import startup as tmdb_startup
+from sources.tmdb.tasks import startup as tmdb_startup, routine as tmdb_routine
 
 
 startups = [

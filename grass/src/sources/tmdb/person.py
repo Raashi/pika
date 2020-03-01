@@ -1,13 +1,8 @@
 from .movie import send_movies
 
 
-MINIMUM_PERSON_POPULARITY = 0.61
-
-
 def get_person(tmdb_client, person_id):
     person_eng = tmdb_client.get('person', url_args=[person_id], params={'append_to_response': 'movie_credits'})
-    if person_eng['popularity'] < MINIMUM_PERSON_POPULARITY:
-        return
 
     person = {
         'id': person_eng['id'],

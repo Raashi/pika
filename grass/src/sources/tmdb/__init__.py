@@ -39,8 +39,6 @@ def download_today_file(tmdb_client, url_name, filename):
                 if block == b'':
                     break
                 f.write(block)
-            # for chunk in f_gz.read(size=8192):
-            #     f.write(chunk)
 
     # delete gzip file
     os.remove(filename_gz)
