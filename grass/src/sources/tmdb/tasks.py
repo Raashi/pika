@@ -1,5 +1,5 @@
-import datetime
 import os
+import datetime
 
 from celery.task import task
 

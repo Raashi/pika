@@ -1,4 +1,10 @@
 from sources import startups
 
-for startup in startups:
-    startup.delay()
+
+def startup(app):
+    print('startup began')
+
+    for startup_task in startups:
+        app.send_task(startup_task.name)
+
+    print('startup ended')

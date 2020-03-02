@@ -17,4 +17,4 @@ COPY start.sh /grass/start.sh
 
 WORKDIR /grass/src
 
-ENTRYPOINT ["bash", "../wait-for-it.sh", "rabbit:5672", "-t", "60", "--", "sh", "../start.sh"]
+ENTRYPOINT ["bash", "../wait-for-it.sh", "localhost:5672", "-t", "60", "--", "sh", "../start.sh"]

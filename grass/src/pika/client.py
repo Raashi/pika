@@ -23,6 +23,7 @@ class PikaApiClient(BaseApiClient):
 
     def __init__(self):
         self.token = None
+        self.login()
 
     def login(self):
         response = self.post('login', self.credentials, process_request=False)
@@ -36,13 +37,13 @@ class PikaApiClient(BaseApiClient):
         return super().handle_error(response, url_name, url_args, kwargs)
 
     def process_request(self, method, url, url_name, data, url_args, kwargs):
-        if self.token is None:
-            self.login()
-
         kwargs['headers'].update(**{self.authorization_header: f'Bearer {self.token}'})
 
         response = super().process_request(method, url, url_name, data, url_args, kwargs)
-        if response.status_code == 403:
-            self.login()
+        if response.status_code != 403:
+            return response
 
+        # invalid token (expired)
+        self.login()
+        kwargs['headers'].update(**{self.authorization_header: f'Bearer {self.token}'})
         return super().process_request(method, url, url_name, data, url_args, kwargs)
